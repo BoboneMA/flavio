@@ -312,6 +312,29 @@ def FL_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s):
     r"""Longitudinal polarization fraction $F_L$"""
     return FL_num_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s)/SA_den_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s)
 
+def AFB_num_Bs(y, x, gamma, J, J_bar, J_h, J_s): 
+    """ Forward-backward asymmetry $A_{FB}$ """
+    return 3/4 * A_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s')
+
+def AFB_Bs(y, x, gamma, J, J_bar, J_h, J_s):
+    """ Forward-backward asymmetry $A_{FB}$ """
+    return AFB_num_Bs(y, x, gamma, J, J_bar, J_h, J_s) / SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+
+def AFB_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s):
+    """ Forward-backward asymmetry $A_{FB}$ time integrated from tmin to tmax 
+    Takes: 
+    - tmin, tmax: minimum and maximum time
+    - y: DeltaGamma/Gamma
+    - x: DeltaM/Gamma
+    - gamma: decay width of the B_s meson (default 0.6597)
+    - J, J_bar, J_h, J_s: angular coefficients at the given q2
+    Returns:
+    - AFB: the time-integrated forward-backward asymmetry, normalized to the time-averaged decay rate
+    """
+    num = 3/4 * A_theory_num_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s, '6s')  # AFB 
+    den = SA_den_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s)                    # normalisation
+    return num / den
+
 def FL_num_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s):
     return -S_theory_num_int_t_Bs(tmin, tmax, y, x, gamma, J, J_bar, J_h, J_s, '2c')
 
