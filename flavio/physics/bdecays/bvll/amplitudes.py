@@ -23,9 +23,38 @@ def prefactor(q2, par, B, V):
     return 4*GF/sqrt(2)*xi_t*alphaem/(4*pi)
 
 
+def prefactor_transversity(q2, par, B, V, mB, mV, mL):
+    """ prefactor N from https://arxiv.org/pdf/0811.1214 (3.33) """
+    GF = par['GF']
+    scale = config['renormalization scale']['bvll']
+    alphaem = running.get_alpha(par, scale)['alpha_e']
+    di_dj = meson_quark[(B,V)]
+    xi_t = ckm.xi('t', di_dj)(par)
+    lambda_b = lambda_K(mB**2, mV**2, q2)
+    beta_l = sqrt( 1 - 4 * mL**2 / q2 )
+    return xi_t * GF * alphaem * ( q2 * lambda_b**0.5 * beta_l / 3 / 2**10 / pi**5 / mB**3 )**0.5
+
+
 def get_ff(q2, par, B, V):
     ff_name = meson_ff[(B,V)] + ' form factor'
     return AuxiliaryQuantity[ff_name].prediction(par_dict=par, wc_obj=None, q2=q2)
+
+
+def transversity_amps_ff(q2, ff, wc_obj, par_dict, B, V, lep, cp_conjugate): 
+    """ transversity amplitudes for B->Vll from https://arxiv.org/pdf/0811.1214 """
+    par = conjugate_par(par_dict.copy()) if cp_conjugate else par_dict.copy()
+    scale = config['renormalization scale']['bvll']
+    label = meson_quark[(B,V)] + lep + lep  # e.g. bsmumu, bdtautau
+    wc = wctot_dict(wc_obj, label, scale, par)
+    if cp_conjugate:
+        wc = conjugate_wc(wc)
+    wc_eff = get_wceff(q2, wc, par, B, V, lep, scale) 
+    ml = par['m_'+lep]
+    mB = par['m_'+B]
+    mV = par['m_'+V]
+    mb = running.get_mb(par, scale)
+    N = prefactor_transversity(q2, par, B, V, lep, mB, mV, ml)
+    return angular.transversity_amps(q2, mB, mV, mb, 0, ml, ml, ff, wc_eff, N)
 
 
 def helicity_amps_ff(q2, ff, wc_obj, par_dict, B, V, lep, cp_conjugate):
@@ -86,3 +115,24 @@ def helicity_amps_bar(q2, ff, wc_obj, par, B, V, lep):
         get_ss(q2, wc_obj, par, B, V, cp_conjugate=True),
         get_subleading(q2, wc_obj, par, B, V, cp_conjugate=True)
         ))
+
+
+def transversity_amps(q2, ff, wc_obj, par, B, V, lep):
+    if q2 >= 8.7 and q2 < 14:
+        warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
+    # return add_dict((
+    #     transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
+    #     get_ss_tr(q2, wc_obj, par, B, V, cp_conjugate=False), 
+    #     get_subleading_tr(q2, wc_obj, par, B, V, cp_conjugate=False)
+    #     ))
+    return transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False)
+
+def transversity_amps_bar(q2, ff, wc_obj, par, B, V, lep):
+    if q2 >= 8.7 and q2 < 14:
+        warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
+    # return add_dict((
+    #     transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
+    #     get_ss_tr(q2, wc_obj, par, B, V, cp_conjugate=True),
+    #     get_subleading_tr(q2, wc_obj, par, B, V, cp_conjugate=True)
+    #     ))
+    return transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True)

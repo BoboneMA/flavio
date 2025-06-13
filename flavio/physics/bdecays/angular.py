@@ -18,6 +18,35 @@ def transversity_to_helicity(ta):
     H['mi' ,'A'] = 1j * ((ta['para_R'] - ta['para_L']) - (ta['perp_R'] - ta['perp_L']))/sqrt(2)
     return H
 
+def transversity_amps(q2, mB, mV, mqh, mql, ml1, ml2, ff, wc, prefactor):
+    """
+    transversity amplitudes for B -> V ll decays. 
+    Taken from https://arxiv.org/pdf/0811.1214 EQ (3.28) and following. 
+    prefactor refers to the N from the paper above. 
+    N = Vtb Vts* sqrt{GF^2 alpha_em^2 q^2 beta_mu sqrt(lambda_K(mB^2, mV^2, q^2)) / [3 * 2^10 pi^5 mB^3]}
+
+    NB: - light quark mass not used here, but kept for consistency in the function signature with helicity_amps_v. 
+        - ml1 and ml2 are always the same lepton mass. It therefore does not matter which one is used for the A_t definition. 
+    """
+    lambda_b = lambda_K(mB**2, mV**2, q2)
+
+    a0_l_term_one = ((wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  # first summand of (3.30)
+    a0_r_term_one = ((wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  
+    a0_term_two = 2 * mqh * ( (wc['7'] - wc['7p']) * ( mB**2 + 3 * mV**2 - q2 ) * ff['T2'] - lambda_b / (mB**2 - mV**2) * ff['T3'] )  # second summand of (3.30) 
+
+    transversity_amps = {
+        'perp_L': (2 * lambda_b)**0.5 * ( ((wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
+        'perp_R': (2 * lambda_b)**0.5 * ( ((wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
+        'para_L': 2**0.5 * (mB**2 - mV**2) * ( ((wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
+        'para_R': 2**0.5 * (mB**2 - mV**2) * ( ((wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
+        '0_L': - 1 / (2 * mV * q2**0.5) * ( a0_l_term_one + a0_term_two ),  # (3.30)
+        '0_R': - 1 / (2 * mV * q2**0.5) * ( a0_r_term_one + a0_term_two ),  # (3.30)
+        't': (lambda_b / q2)**0.5 * ff['A0'] * ( 2 * (wc['10'] - wc['10p']) + q2 / ml1 * (wc['p'] - wc['pp']) ),  # (3.31)  
+        'S': - 2 * lambda_b**0.5 * (wc['s'] - wc['sp']) * ff['A0'],  # (3.32)
+    }
+
+    return {k: prefactor * v for k, v in transversity_amps.items()}
+
 def helicity_amps_v(q2, mB, mV, mqh, mql, ml1, ml2, ff, wc, prefactor):
     laB = lambda_K(mB**2, mV**2, q2)
     H = {}
@@ -423,3 +452,57 @@ def angularcoeffs_general_p(*args, **kwargs):
     J['b'] = G[1]
     J['c'] = 3*G[2]/2.
     return J
+
+
+def angularcoeffs_general_transversity(A, q2, ml, phi):
+    """
+    Returns the angular coefficients from the transversity amplitudes, 
+    compare e.g. https://arxiv.org/pdf/1502.05509 EQ 9.
+    The transversity amplitudes are stored in the dictionary A with the keys:
+     - para_L,R, 
+     - perp_L,R, 
+     - 0_L,R, 
+     - t, 
+     - S
+
+    NB: phi is not used in this function, but is included for consistency with the other functions.
+    """
+    def _CAS(x):  # complex absolute square
+        return x * _Co(x)
+
+    beta_l = sqrt(1 - 4 * ml**2 / q2)
+
+    J = {
+        '1s': (2 + beta_l**2) / 4 * ( _CAS(A['para_L']) + _CAS(A['para_R']) + _CAS(A['perp_L']) + _CAS(A['perp_R']) ) 
+              + 4 * ml**2 / q2 * _Re( A['perp_L'] * _Co(A['perp_R']) + A['para_L'] * _Co(A['para_R']) ),  
+        '1c': (_CAS(A['0_L']) + _CAS(A['0_R'])) + 4 * ml**2 / q2 * ( _CAS(A['t']) + 2 * _Re( A['0_L'] * _Co(A['0_R']) ) ) + beta_l**2 * _CAS(A['S']),
+        '2s': beta_l**2 / 4 * ( _CAS(A['para_L']) + _CAS(A['para_R']) + _CAS(A['perp_L']) + _CAS(A['perp_R']) ), 
+        '2c': - 1 * beta_l**2 * (_CAS(A['0_L']) + _CAS(A['0_R'])), 
+        '3': beta_l**2 / 2 * ( _CAS(A['perp_L']) - _CAS(A['para_L']) + _CAS(A['perp_R']) - _CAS(A['para_R']) ), 
+        '4': beta_l**2 / sqrt(2) * ( _Re( A['0_L'] * _Co(A['para_L']) + A['0_R'] * _Co(A['para_R']) ) ),
+        '5': sqrt(2) * beta_l * ( _Re( A['0_L'] * _Co(A['perp_L']) - A['0_R'] * _Co(A['perp_R']) ) - ml / sqrt(q2) * _Re( A['para_L'] * _Co(A['S']) + _Co(A['para_R']) * A['S'] ) ),
+        '6s': 2 * beta_l * ( _Re( A['para_L'] * _Co(A['perp_L']) - A['para_R'] * _Co(A['perp_R']) ) ), 
+        '6c': 4 * beta_l * ml / sqrt(q2) * ( _Re( A['0_L'] * _Co(A['S']) + _Co(A['0_R']) * A['S'] ) ),
+        '7': sqrt(2) * beta_l * ( _Im( A['0_L'] * _Co(A['para_L']) - A['0_R'] * _Co(A['para_R']) ) + ml / sqrt(q2) * _Im( A['perp_L'] * _Co(A['S']) - _Co(A['perp_R']) * A['S'] ) ),
+        '8': beta_l**2 / sqrt(2) * ( _Im( A['0_L'] * _Co(A['perp_L']) + A['0_R'] * _Co(A['perp_R']) ) ),
+        '9': beta_l**2  * ( _Im( _Co(A['para_L']) * A['perp_L'] + _Co(A['para_R']) * A['perp_R'] ) ),
+    }
+
+    return J
+
+
+def angularcoeffs_h_transversity(A, q2, ml, phi): 
+    """ 
+    Returns the angular coefficients h_i from the transversity amplitudes. 
+    Compare e.g. https://arxiv.org/pdf/1502.05509 Appendix C, EQ 117 and following. 
+    """
+    qp = -cmath.exp(1j * phi)
+    beta_l = sqrt(1 - 4 * ml**2 / q2)
+    beta_l2 = 1 - 4 * ml**2 / q2
+
+    h = {
+        '1s': (2 + beta_l2) / 2 * _Re( qp * (  ) ), 
+    }
+
+    return h
+
