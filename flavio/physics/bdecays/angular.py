@@ -5,6 +5,7 @@ lepton flavour violating decays."""
 
 from flavio.physics.bdecays.common import lambda_K
 from math import sqrt, pi
+from argparse import Namespace
 import cmath
 
 
@@ -491,7 +492,7 @@ def angularcoeffs_general_transversity(A, q2, ml, phi):
     return J
 
 
-def angularcoeffs_h_transversity(A, q2, ml, phi): 
+def angularcoeffs_h_transversity(A, Atilde, q2, ml, phi): 
     """ 
     Returns the angular coefficients h_i from the transversity amplitudes. 
     Compare e.g. https://arxiv.org/pdf/1502.05509 Appendix C, EQ 117 and following. 
@@ -500,8 +501,41 @@ def angularcoeffs_h_transversity(A, q2, ml, phi):
     beta_l = sqrt(1 - 4 * ml**2 / q2)
     beta_l2 = 1 - 4 * ml**2 / q2
 
+    AtL_ALs_perp = Atilde['perp_L'] * _Co(A['perp_L'])
+    AtR_ARs_perp = Atilde['perp_R'] * _Co(A['perp_R'])
+    AtL_ALs_para = Atilde['para_L'] * _Co(A['para_L'])
+    AtR_ARs_para = Atilde['para_R'] * _Co(A['para_R'])
+    AtL_ALs_0 = Atilde['0_L'] * _Co(A['0_L'])
+    AtR_ARs_0 = Atilde['0_R'] * _Co(A['0_R'])
+    At_As_t = Atilde['t'] * _Co(A['t'])
+    At_As_S = Atilde['S'] * _Co(A['S'])
+
+    AtL_ARs_perp = Atilde['perp_L'] * _Co(A['perp_R'])
+    AtR_ALs_perp = Atilde['perp_R'] * _Co(A['perp_L'])
+    AtL_ARs_para = Atilde['para_L'] * _Co(A['para_R'])
+    AtR_ALs_para = Atilde['para_R'] * _Co(A['para_L'])
+
+    AtL_ARs_0 = Atilde['0_L'] * _Co(A['0_R'])
+    AtR_ALs_0 = Atilde['0_R'] * _Co(A['0_L'])
+
     h = {
-        '1s': (2 + beta_l2) / 2 * _Re( qp * (  ) ), 
+        '1s': (2 + beta_l2) / 2 * _Re( qp * ( AtL_ALs_perp + AtL_ALs_para + AtR_ARs_perp + AtR_ARs_para ) )
+              + 4 * ml**2 / q2 * _Re( qp * ( AtL_ARs_perp + AtL_ARs_para ) + _Co(qp) * ( _Co( AtR_ALs_perp ) * _Co(AtR_ALs_para) ) ),  # (117)
+        '1c': 2 * _Re( qp * ( AtL_ALs_0 + AtR_ARs_0 ) ) 
+              + 8 * ml**2 / q2 * (_Re( qp * At_As_t ) + _Re( qp * AtL_ARs_0 * _Co(qp) * _Co(AtR_ALs_0) ))
+              + 2 * beta_l2 * _Re( qp * At_As_S ),  # (118)
+        '2s': beta_l2 / 2 * _Re( qp * ( AtL_ALs_perp + AtL_ALs_para + AtR_ARs_perp + AtR_ARs_para ) ),  # (119) (= 1s for massless leptons)
+        '2c': -2 * beta_l2 * _Re( qp * ( AtL_ALs_0 + AtR_ARs_0 ) ),  # (120) (= -1c for massless leptons)
+        '3': beta_l2 * _Re( qp * ( AtL_ALs_perp - AtL_ALs_para + AtR_ARs_perp - AtR_ARs_para ) ),  # (121)
+        '4': beta_l2 / sqrt(2) * _Re( qp * (Atilde['0_L'] * _Co(A['para_L']) + Atilde['0_R'] * _Co(A['para_R'])) + _Co(qp) * ( A['0_L'] * _Co(Atilde['para_L']) + A['0_R'] * _Co(Atilde['para_R']) ) ),  # (122)
+        '5': sqrt(2) * beta_l * (_Re( qp * ( Atilde['0_L'] * _Co(A['perp_L']) - Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * (A['0_L'] * _Co(Atilde['perp_L']) - A['0_R'] * _Co(Atilde['perp_R'])) ) 
+                                 - ml / sqrt(q2) * _Re( qp * ( Atilde['para_L'] * _Co(A['S']) + Atilde['para_R'] * _Co(A['S']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['S']) + A['para_R'] * _Co(Atilde['S']) ) ) ),  # (123)
+        '6s': 2 * beta_l * _Re( qp * ( Atilde['para_L'] * _Co(A['perp_L']) - Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L'] - A['para_R'] * _Co(Atilde['perp_R'])) ) ),  # (124)
+        '6c': 4 * beta_l * ml / sqrt(q2) * _Re( qp * ( Atilde['0_L'] * _Co(A['S'] + Atilde['0_R'] * _Co(A['S'])) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['S']) + A['0_R'] * _Co(Atilde['S']) ) ),  # (125)
+        '7': sqrt(2) * beta_l * ( _Im( qp * ( Atilde['0_L'] * _Co(A['para_L'] - Atilde['0_R'] * _Co(A['para_R'])) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) - A['0_R'] * _Co(Atilde['para_R']) ) ) 
+                                 + ml / sqrt(q2) * _Im( qp * ( Atilde['perp_L'] * _Co(A['S']) + Atilde['perp_R'] * _Co(A['S']) ) + _Co(qp) * ( A['perp_L'] * _Co(Atilde['S']) + A['perp_R'] * _Co(Atilde['S']) ) ) ),  # (126)
+        '8': beta_l2 / sqrt(2) * _Im( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (127)
+        '9': -beta_l2 * _Im( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (128)
     }
 
     return h
