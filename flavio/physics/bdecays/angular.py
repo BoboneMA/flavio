@@ -19,6 +19,18 @@ def transversity_to_helicity(ta):
     H['mi' ,'A'] = 1j * ((ta['para_R'] - ta['para_L']) - (ta['perp_R'] - ta['perp_L']))/sqrt(2)
     return H
 
+def helicity_to_transversity(h: dict[str, float]) -> dict[str, float]:
+    """ translate helicity amplitudes to transversity amplitudes """
+    ta = {
+        '0_R': -0.5j * (h['0', 'V'] + h['0', 'A']),
+        '0_L': -0.5j * (h['0', 'V'] - h['0', 'A']), 
+        'perp_R': 1j/2/sqrt(2) * (h['mi', 'A'] - h['pl', 'A'] + h['mi', 'V'] - h['pl', 'V']),
+        'perp_L': 1j/2/sqrt(2) * (h['pl', 'A'] - h['mi', 'A'] + h['pl', 'V'] - h['mi', 'V']),
+        'para_R': -1j/2/sqrt(2) * (h['mi', 'A'] + h['pl', 'A'] + h['mi', 'V'] + h['pl', 'V']),
+        'para_L': 1j/2/sqrt(2) * (h['mi', 'A'] + h['pl', 'A'] - h['pl', 'V'] - h['mi', 'V']),
+    }
+    return ta
+
 def transversity_amps(q2, mB, mV, mqh, mql, ml1, ml2, ff, wc, prefactor):
     """
     transversity amplitudes for B -> V ll decays. 
@@ -28,22 +40,34 @@ def transversity_amps(q2, mB, mV, mqh, mql, ml1, ml2, ff, wc, prefactor):
 
     NB: - light quark mass not used here, but kept for consistency in the function signature with helicity_amps_v. 
         - ml1 and ml2 are always the same lepton mass. It therefore does not matter which one is used for the A_t definition. 
+        - transversity amplitudes are also given in https://arxiv.org/pdf/hep-ph/0502060
     """
+    def lambda_qsq(q2, mB, mV):
+        return ((mB + mV)**2 - q2) * ((mB - mV)**2 - q2)  # (D.3) in https://arxiv.org/pdf/1503.05534
     lambda_b = lambda_K(mB**2, mV**2, q2)
+    wc['9'] = wc['v']
+    wc['9p'] = wc['vp']
+    wc['10'] = wc['a']
+    wc['10p'] = wc['ap']
 
-    a0_l_term_one = ((wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  # first summand of (3.30)
-    a0_r_term_one = ((wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  
-    a0_term_two = 2 * mqh * ( (wc['7'] - wc['7p']) * ( mB**2 + 3 * mV**2 - q2 ) * ff['T2'] - lambda_b / (mB**2 - mV**2) * ff['T3'] )  # second summand of (3.30) 
+    # (D.5) in https://arxiv.org/pdf/1503.05534
+    ff['A2'] = -(mB + mV)*(-ff['A1']*mB**3 - ff['A1']*mB**2*mV + ff['A1']*mB*mV**2 + ff['A1']*mB*q2 + ff['A1']*mV**3 + ff['A1']*mV*q2 + 16*ff['A12']*mB*mV**2)/lambda_qsq(q2, mB, mV)
+    ff['T3'] = -(mB - mV)*(-ff['T2']*mB**3 - ff['T2']*mB**2*mV - 3*ff['T2']*mB*mV**2 + ff['T2']*mB*q2 - 3*ff['T2']*mV**3 + ff['T2']*mV*q2 + 8*ff['T23']*mB*mV**2)/lambda_qsq(q2, mB, mV)
+
+    # from https://arxiv.org/pdf/0811.1214
+    a0_l_term_one = ( (wc['9'] - wc['9p']) - (wc['10'] - wc['10p']) ) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  # first summand of (3.30)
+    a0_r_term_one = ( (wc['9'] - wc['9p']) + (wc['10'] - wc['10p']) ) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  
+    a0_term_two = 2 * mqh * (wc['7'] - wc['7p']) * ( ( mB**2 + 3 * mV**2 - q2 ) * ff['T2'] - lambda_b / (mB**2 - mV**2) * ff['T3'] )  # second summand of (3.30) 
 
     transversity_amps = {
-        'perp_L': (2 * lambda_b)**0.5 * ( ((wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
-        'perp_R': (2 * lambda_b)**0.5 * ( ((wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
-        'para_L': 2**0.5 * (mB**2 - mV**2) * ( ((wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
-        'para_R': 2**0.5 * (mB**2 - mV**2) * ( ((wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
-        '0_L': - 1 / (2 * mV * q2**0.5) * ( a0_l_term_one + a0_term_two ),  # (3.30)
-        '0_R': - 1 / (2 * mV * q2**0.5) * ( a0_r_term_one + a0_term_two ),  # (3.30)
-        't': (lambda_b / q2)**0.5 * ff['A0'] * ( 2 * (wc['10'] - wc['10p']) + q2 / ml1 * (wc['p'] - wc['pp']) ),  # (3.31)  
-        'S': - 2 * lambda_b**0.5 * (wc['s'] - wc['sp']) * ff['A0'],  # (3.32)
+        'perp_L': sqrt(2 * lambda_b) * ( ( (wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 * (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
+        'perp_R': sqrt(2 * lambda_b) * ( ( (wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 * (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
+        'para_L': sqrt(2) * (mB**2 - mV**2) * ( ((wc['9'] - wc['9p']) - (wc['10'] - wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
+        'para_R': sqrt(2) * (mB**2 - mV**2) * ( ((wc['9'] - wc['9p']) + (wc['10'] - wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
+        '0_L': - 1 / (2 * mV * sqrt(q2)) * ( a0_l_term_one + a0_term_two ),  # (3.30)
+        '0_R': - 1 / (2 * mV * sqrt(q2)) * ( a0_r_term_one + a0_term_two ),  # (3.30)
+        't': sqrt(lambda_b / q2) * ff['A0'] * ( 2 * (wc['10'] - wc['10p']) + q2 / ml1 * (wc['p'] - wc['pp']) ),  # (3.31)  
+        'S': - 2 * sqrt(lambda_b) * (wc['s'] - wc['sp']) * ff['A0'],  # (3.32)
     }
 
     return {k: prefactor * v for k, v in transversity_amps.items()}
@@ -455,7 +479,7 @@ def angularcoeffs_general_p(*args, **kwargs):
     return J
 
 
-def angularcoeffs_general_transversity(A, q2, ml, phi):
+def angularcoeffs_general_transversity(A, q2, ml):
     """
     Returns the angular coefficients from the transversity amplitudes, 
     compare e.g. https://arxiv.org/pdf/1502.05509 EQ 9.
@@ -475,29 +499,29 @@ def angularcoeffs_general_transversity(A, q2, ml, phi):
 
     J = {
         '1s': (2 + beta_l**2) / 4 * ( _CAS(A['para_L']) + _CAS(A['para_R']) + _CAS(A['perp_L']) + _CAS(A['perp_R']) ) 
-              + 4 * ml**2 / q2 * _Re( A['perp_L'] * _Co(A['perp_R']) + A['para_L'] * _Co(A['para_R']) ),  
+              + 4 * ml**2 / q2 * _Re( A['perp_L'] * _Co(A['perp_R']) + A['para_L'] * _Co(A['para_R']) ),
         '1c': (_CAS(A['0_L']) + _CAS(A['0_R'])) + 4 * ml**2 / q2 * ( _CAS(A['t']) + 2 * _Re( A['0_L'] * _Co(A['0_R']) ) ) + beta_l**2 * _CAS(A['S']),
-        '2s': beta_l**2 / 4 * ( _CAS(A['para_L']) + _CAS(A['para_R']) + _CAS(A['perp_L']) + _CAS(A['perp_R']) ), 
-        '2c': - 1 * beta_l**2 * (_CAS(A['0_L']) + _CAS(A['0_R'])), 
-        '3': beta_l**2 / 2 * ( _CAS(A['perp_L']) - _CAS(A['para_L']) + _CAS(A['perp_R']) - _CAS(A['para_R']) ), 
-        '4': beta_l**2 / sqrt(2) * ( _Re( A['0_L'] * _Co(A['para_L']) + A['0_R'] * _Co(A['para_R']) ) ),
-        '5': sqrt(2) * beta_l * ( _Re( A['0_L'] * _Co(A['perp_L']) - A['0_R'] * _Co(A['perp_R']) ) - ml / sqrt(q2) * _Re( A['para_L'] * _Co(A['S']) + _Co(A['para_R']) * A['S'] ) ),
-        '6s': 2 * beta_l * ( _Re( A['para_L'] * _Co(A['perp_L']) - A['para_R'] * _Co(A['perp_R']) ) ), 
-        '6c': 4 * beta_l * ml / sqrt(q2) * ( _Re( A['0_L'] * _Co(A['S']) + _Co(A['0_R']) * A['S'] ) ),
-        '7': sqrt(2) * beta_l * ( _Im( A['0_L'] * _Co(A['para_L']) - A['0_R'] * _Co(A['para_R']) ) + ml / sqrt(q2) * _Im( A['perp_L'] * _Co(A['S']) - _Co(A['perp_R']) * A['S'] ) ),
-        '8': beta_l**2 / sqrt(2) * ( _Im( A['0_L'] * _Co(A['perp_L']) + A['0_R'] * _Co(A['perp_R']) ) ),
-        '9': beta_l**2  * ( _Im( _Co(A['para_L']) * A['perp_L'] + _Co(A['para_R']) * A['perp_R'] ) ),
+        '2s': beta_l**2 / 4 * ( _CAS(A['para_L']) + _CAS(A['para_R']) + _CAS(A['perp_L']) + _CAS(A['perp_R']) ),
+        '2c': - 1 * beta_l**2 * (_CAS(A['0_L']) + _CAS(A['0_R'])),
+        3: beta_l**2 / 2 * ( _CAS(A['perp_L']) - _CAS(A['para_L']) + _CAS(A['perp_R']) - _CAS(A['para_R']) ),
+        4: beta_l**2 / sqrt(2) * ( _Re( A['0_L'] * _Co(A['para_L']) + A['0_R'] * _Co(A['para_R']) ) ),
+        5: sqrt(2) * beta_l * ( _Re( A['0_L'] * _Co(A['perp_L']) - A['0_R'] * _Co(A['perp_R']) ) - ml / sqrt(q2) * _Re( A['para_L'] * _Co(A['S']) + A['para_R'] * _Co(A['S']) ) ),  # differs between https://arxiv.org/pdf/0811.1214 (this version) and https://arxiv.org/pdf/1502.05509
+        '6s': 2 * beta_l * ( _Re( A['para_L'] * _Co(A['perp_L']) - A['para_R'] * _Co(A['perp_R']) ) ),
+        '6c': 4 * beta_l * ml / sqrt(q2) * ( _Re( A['0_L'] * _Co(A['S']) + A['0_R'] * _Co(A['S']) ) ),  # differs between https://arxiv.org/pdf/0811.1214 (this version) and https://arxiv.org/pdf/1502.05509
+        7: sqrt(2) * beta_l * ( _Im( A['0_L'] * _Co(A['para_L']) - A['0_R'] * _Co(A['para_R']) ) + ml / sqrt(q2) * _Im( A['perp_L'] * _Co(A['S']) - A['perp_R'] * _Co(A['S']) ) ),  # differs between https://arxiv.org/pdf/0811.1214 (this version) and https://arxiv.org/pdf/1502.05509
+        8: beta_l**2 / sqrt(2) * ( _Im( A['0_L'] * _Co(A['perp_L']) + A['0_R'] * _Co(A['perp_R']) ) ),
+        9: beta_l**2  * ( _Im( _Co(A['para_L']) * A['perp_L'] + _Co(A['para_R']) * A['perp_R'] ) ),
+        # 7, 8, 9 differ between https://arxiv.org/pdf/1502.05509 (this version) https://arxiv.org/pdf/0811.1214 (suspect parenthesis typo with L->R writing)
     }
 
     return J
 
 
-def angularcoeffs_h_transversity(A, Atilde, q2, ml, phi): 
+def angularcoeffs_h_transversity(A, Atilde, q2, ml, qp): 
     """ 
     Returns the angular coefficients h_i from the transversity amplitudes. 
     Compare e.g. https://arxiv.org/pdf/1502.05509 Appendix C, EQ 117 and following. 
     """
-    qp = -cmath.exp(1j * phi)
     beta_l = sqrt(1 - 4 * ml**2 / q2)
     beta_l2 = 1 - 4 * ml**2 / q2
 
@@ -526,16 +550,16 @@ def angularcoeffs_h_transversity(A, Atilde, q2, ml, phi):
               + 2 * beta_l2 * _Re( qp * At_As_S ),  # (118)
         '2s': beta_l2 / 2 * _Re( qp * ( AtL_ALs_perp + AtL_ALs_para + AtR_ARs_perp + AtR_ARs_para ) ),  # (119) (= 1s for massless leptons)
         '2c': -2 * beta_l2 * _Re( qp * ( AtL_ALs_0 + AtR_ARs_0 ) ),  # (120) (= -1c for massless leptons)
-        '3': beta_l2 * _Re( qp * ( AtL_ALs_perp - AtL_ALs_para + AtR_ARs_perp - AtR_ARs_para ) ),  # (121)
-        '4': beta_l2 / sqrt(2) * _Re( qp * (Atilde['0_L'] * _Co(A['para_L']) + Atilde['0_R'] * _Co(A['para_R'])) + _Co(qp) * ( A['0_L'] * _Co(Atilde['para_L']) + A['0_R'] * _Co(Atilde['para_R']) ) ),  # (122)
-        '5': sqrt(2) * beta_l * (_Re( qp * ( Atilde['0_L'] * _Co(A['perp_L']) - Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * (A['0_L'] * _Co(Atilde['perp_L']) - A['0_R'] * _Co(Atilde['perp_R'])) ) 
+        3: beta_l2 * _Re( qp * ( AtL_ALs_perp - AtL_ALs_para + AtR_ARs_perp - AtR_ARs_para ) ),  # (121)
+        4: beta_l2 / sqrt(2) * _Re( qp * (Atilde['0_L'] * _Co(A['para_L']) + Atilde['0_R'] * _Co(A['para_R'])) + _Co(qp) * ( A['0_L'] * _Co(Atilde['para_L']) + A['0_R'] * _Co(Atilde['para_R']) ) ),  # (122)
+        5: sqrt(2) * beta_l * (_Re( qp * ( Atilde['0_L'] * _Co(A['perp_L']) - Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * (A['0_L'] * _Co(Atilde['perp_L']) - A['0_R'] * _Co(Atilde['perp_R'])) ) 
                                  - ml / sqrt(q2) * _Re( qp * ( Atilde['para_L'] * _Co(A['S']) + Atilde['para_R'] * _Co(A['S']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['S']) + A['para_R'] * _Co(Atilde['S']) ) ) ),  # (123)
         '6s': 2 * beta_l * _Re( qp * ( Atilde['para_L'] * _Co(A['perp_L']) - Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L'] - A['para_R'] * _Co(Atilde['perp_R'])) ) ),  # (124)
         '6c': 4 * beta_l * ml / sqrt(q2) * _Re( qp * ( Atilde['0_L'] * _Co(A['S'] + Atilde['0_R'] * _Co(A['S'])) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['S']) + A['0_R'] * _Co(Atilde['S']) ) ),  # (125)
-        '7': sqrt(2) * beta_l * ( _Im( qp * ( Atilde['0_L'] * _Co(A['para_L'] - Atilde['0_R'] * _Co(A['para_R'])) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) - A['0_R'] * _Co(Atilde['para_R']) ) ) 
+        7: sqrt(2) * beta_l * ( _Im( qp * ( Atilde['0_L'] * _Co(A['para_L'] - Atilde['0_R'] * _Co(A['para_R'])) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) - A['0_R'] * _Co(Atilde['para_R']) ) ) 
                                  + ml / sqrt(q2) * _Im( qp * ( Atilde['perp_L'] * _Co(A['S']) + Atilde['perp_R'] * _Co(A['S']) ) + _Co(qp) * ( A['perp_L'] * _Co(Atilde['S']) + A['perp_R'] * _Co(Atilde['S']) ) ) ),  # (126)
-        '8': beta_l2 / sqrt(2) * _Im( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (127)
-        '9': -beta_l2 * _Im( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (128)
+        8: beta_l2 / sqrt(2) * _Im( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (127)
+        9: -beta_l2 * _Im( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (128)
     }
 
     return h

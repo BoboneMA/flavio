@@ -31,8 +31,8 @@ def prefactor_transversity(q2, par, B, V, mB, mV, mL):
     di_dj = meson_quark[(B,V)]
     xi_t = ckm.xi('t', di_dj)(par)
     lambda_b = lambda_K(mB**2, mV**2, q2)
-    beta_l = sqrt( 1 - 4 * mL**2 / q2 )
-    return xi_t * GF * alphaem * ( q2 * lambda_b**0.5 * beta_l / 3 / 2**10 / pi**5 / mB**3 )**0.5
+    betal = sqrt( 1 - 4 * mL**2 / q2 )
+    return xi_t * GF * alphaem * ( q2 * lambda_b**0.5 * betal / 3 / 2**10 / pi**5 / mB**3 )**0.5
 
 
 def get_ff(q2, par, B, V):
@@ -53,7 +53,7 @@ def transversity_amps_ff(q2, ff, wc_obj, par_dict, B, V, lep, cp_conjugate):
     mB = par['m_'+B]
     mV = par['m_'+V]
     mb = running.get_mb(par, scale)
-    N = prefactor_transversity(q2, par, B, V, lep, mB, mV, ml)
+    N = prefactor_transversity(q2, par, B, V, mB, mV, ml)
     return angular.transversity_amps(q2, mB, mV, mb, 0, ml, ml, ff, wc_eff, N)
 
 
@@ -84,6 +84,13 @@ def get_ss(q2, wc_obj, par_dict, B, V, cp_conjugate):
     ss_name = B+'->'+V+'ll spectator scattering'
     return AuxiliaryQuantity[ss_name].prediction(par_dict=par_dict, wc_obj=wc_obj, q2=q2, cp_conjugate=cp_conjugate)
 
+def get_ss_tr(q2, wc_obj, par_dict, B, V, cp_conjugate):
+    # this only needs to be done for low q2 - which doesn't exist for taus!
+    if q2 >= 8.9:
+        return {'0_L': 0, '0_R': 0, 'perp_L': 0, 'perp_R': 0, 'para_L': 0, 'para_R': 0, 'S': 0, 't': 0}
+    ss_name = B+'->'+V+'ll spectator scattering (transversity - no interp)'
+    return AuxiliaryQuantity[ss_name].prediction(par_dict=par_dict, wc_obj=wc_obj, q2=q2, cp_conjugate=cp_conjugate)
+
 # get subleading hadronic contribution at low q2
 def get_subleading(q2, wc_obj, par_dict, B, V, cp_conjugate):
     if B=='Bs' and V == 'K*0':
@@ -98,41 +105,55 @@ def get_subleading(q2, wc_obj, par_dict, B, V, cp_conjugate):
     else:
         return {}
 
+# get subleading hadronic contribution at low q2
+def get_subleading_tr(q2, wc_obj, par_dict, B, V, cp_conjugate):
+    if B!='Bs' and V != 'phi':
+        # skip subleading contribution for anything but Bs -> phi for now
+        return {}
+    if q2 <= 9:
+        sub_name = B+'->'+V+ 'll subleading effects at low q2 (transversity)'
+        return AuxiliaryQuantity[sub_name].prediction(par_dict=par_dict, wc_obj=wc_obj, q2=q2, cp_conjugate=cp_conjugate)
+    elif q2 > 14:
+        sub_name = B+'->'+V+ 'll subleading effects at high q2 (transversity)'
+        return AuxiliaryQuantity[sub_name].prediction(par_dict=par_dict, wc_obj=wc_obj, q2=q2, cp_conjugate=cp_conjugate)
+    else:
+        return {}
+
 def helicity_amps(q2, ff, wc_obj, par, B, V, lep):
     if q2 >= 8.7 and q2 < 14:
         warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
-    return add_dict((
-        helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
-        get_ss(q2, wc_obj, par, B, V, cp_conjugate=False),
-        get_subleading(q2, wc_obj, par, B, V, cp_conjugate=False)
-        ))
+    # return add_dict((
+    #     helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
+    #     get_ss(q2, wc_obj, par, B, V, cp_conjugate=False),
+    #     get_subleading(q2, wc_obj, par, B, V, cp_conjugate=False)
+    #     ))
+    return helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False)
 
 def helicity_amps_bar(q2, ff, wc_obj, par, B, V, lep):
     if q2 >= 8.7 and q2 < 14:
         warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
-    return add_dict((
-        helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
-        get_ss(q2, wc_obj, par, B, V, cp_conjugate=True),
-        get_subleading(q2, wc_obj, par, B, V, cp_conjugate=True)
-        ))
+    # return add_dict((
+    #     helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
+    #     get_ss(q2, wc_obj, par, B, V, cp_conjugate=True),
+    #     get_subleading(q2, wc_obj, par, B, V, cp_conjugate=True)
+    #     ))
+    return helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True)
 
 
 def transversity_amps(q2, ff, wc_obj, par, B, V, lep):
     if q2 >= 8.7 and q2 < 14:
         warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
-    # return add_dict((
-    #     transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
-    #     get_ss_tr(q2, wc_obj, par, B, V, cp_conjugate=False), 
-    #     get_subleading_tr(q2, wc_obj, par, B, V, cp_conjugate=False)
-    #     ))
+    # return add_dict(
+    #     (transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
+    #     #  get_ss_tr(q2, wc_obj, par, B, V, cp_conjugate=False),
+    #      get_subleading_tr(q2, wc_obj, par, B, V, cp_conjugate=False)))
     return transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False)
 
 def transversity_amps_bar(q2, ff, wc_obj, par, B, V, lep):
     if q2 >= 8.7 and q2 < 14:
         warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
-    # return add_dict((
-    #     transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
-    #     get_ss_tr(q2, wc_obj, par, B, V, cp_conjugate=True),
-    #     get_subleading_tr(q2, wc_obj, par, B, V, cp_conjugate=True)
-    #     ))
+    # return add_dict(
+    #     (transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
+    #     #  get_ss_tr(q2, wc_obj, par, B, V, cp_conjugate=True),
+    #      get_subleading_tr(q2, wc_obj, par, B, V, cp_conjugate=True)))
     return transversity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True)

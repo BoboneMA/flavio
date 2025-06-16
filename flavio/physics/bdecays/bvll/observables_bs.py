@@ -49,8 +49,8 @@ def bsvll_obs(function, q2, wc_obj, par, B, V, lep):
     ff = flavio.physics.bdecays.bvll.amplitudes.get_ff(q2, par, B, V)
     h = flavio.physics.bdecays.bvll.amplitudes.helicity_amps(q2, ff, wc_obj, par, B, V, lep)
     h_bar = flavio.physics.bdecays.bvll.amplitudes.helicity_amps_bar(q2, ff, wc_obj, par, B, V, lep)
-    J = flavio.physics.bdecays.angular.angularcoeffs_general_v(h, q2, mB, mV, mb, 0, ml, ml)
-    J_bar = flavio.physics.bdecays.angular.angularcoeffs_general_v(h_bar, q2, mB, mV, mb, 0, ml, ml)
+    J = angular.angularcoeffs_general_v(h, q2, mB, mV, mb, 0, ml, ml)
+    J_bar = angular.angularcoeffs_general_v(h_bar, q2, mB, mV, mb, 0, ml, ml)
     h_tilde = h_bar.copy()
     h_tilde[('pl', 'V')] = h_bar[('mi', 'V')]
     h_tilde[('pl', 'A')] = h_bar[('mi', 'A')]
@@ -59,8 +59,38 @@ def bsvll_obs(function, q2, wc_obj, par, B, V, lep):
     h_tilde['S'] = -h_bar['S']
     q_over_p = flavio.physics.mesonmixing.observables.q_over_p(wc_obj, par, B)
     phi = cmath.phase(-q_over_p) # the phase of -q/p
-    J_h = flavio.physics.bdecays.angular.angularcoeffs_h_v(phi, h, h_tilde, q2, mB, mV, mb, 0, ml, ml)
-    J_s = flavio.physics.bdecays.angular.angularcoeffs_s_v(phi, h, h_tilde, q2, mB, mV, mb, 0, ml, ml)
+    J_h = angular.angularcoeffs_h_v(phi, h, h_tilde, q2, mB, mV, mb, 0, ml, ml)
+    J_s = angular.angularcoeffs_s_v(phi, h, h_tilde, q2, mB, mV, mb, 0, ml, ml)
+    return function(y, x, gamma, J, J_bar, J_h, J_s)
+
+def bsvll_obs_trans(function, q2, wc_obj, par, B_meson, V_meson, lepton): 
+    ml = par['m_'+lepton]
+    mB = par['m_'+B_meson]
+    mV = par['m_'+V_meson]
+    y = par['DeltaGamma/Gamma_'+B_meson]/2.
+    x = par['DeltaM/Gamma_'+B_meson]
+    gamma = 0.6597 # only for Bs TODO: remove
+    if q2 < 4*ml**2 or q2 > (mB-mV)**2:
+        return 0
+    
+    scale = flavio.config['renormalization scale']['bvll']
+    mb = flavio.physics.running.running.get_mb(par, scale)
+    ff = flavio.physics.bdecays.bvll.amplitudes.get_ff(q2, par, B_meson, V_meson)
+    A = flavio.physics.bdecays.bvll.amplitudes.transversity_amps(q2, ff, wc_obj, par, B_meson, V_meson, lepton)
+    A_bar = flavio.physics.bdecays.bvll.amplitudes.transversity_amps_bar(q2, ff, wc_obj, par, B_meson, V_meson, lepton)
+    # h = flavio.physics.bdecays.bvll.amplitudes.helicity_amps(q2, ff, wc_obj, par, B_meson, V_meson, lepton)
+    # h_bar = flavio.physics.bdecays.bvll.amplitudes.helicity_amps_bar(q2, ff, wc_obj, par, B_meson, V_meson, lepton)
+    # A = angular.helicity_to_transversity(h)
+    # A_bar = angular.helicity_to_transversity(h_bar)
+    J = angular.angularcoeffs_general_transversity(A, q2, ml)
+    J_bar = angular.angularcoeffs_general_transversity(A_bar, q2, ml)
+    A_tilde = A_bar.copy()
+    A_tilde['perp_L'] = -1 * A_bar['perp_L']
+    A_tilde['perp_R'] = -1 * A_bar['perp_R']
+    A_tilde['S'] = -1 * A_bar['S']  # Table 3 of https://arxiv.org/pdf/1502.05509
+    q_over_p = flavio.physics.mesonmixing.observables.q_over_p(wc_obj, par, B_meson)
+    J_h = angular.angularcoeffs_h_transversity(A, A_tilde, q2, ml, q_over_p)
+    J_s = angular.angularcoeffs_h_transversity(A, A_tilde, q2, ml, q_over_p)
     return function(y, x, gamma, J, J_bar, J_h, J_s)
 
 def bsvll_obs_int_t(function, tmin, tmax, q2, wc_obj, par, B, V, lep):
