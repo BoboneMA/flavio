@@ -89,8 +89,8 @@ def bsvll_obs_trans(function, q2, wc_obj, par, B_meson, V_meson, lepton):
     A_tilde['perp_R'] = -1 * A_bar['perp_R']
     A_tilde['S'] = -1 * A_bar['S']  # Table 3 of https://arxiv.org/pdf/1502.05509
     q_over_p = flavio.physics.mesonmixing.observables.q_over_p(wc_obj, par, B_meson)
-    J_h = angular.angularcoeffs_h_transversity(A, A_tilde, q2, ml, q_over_p)
-    J_s = angular.angularcoeffs_h_transversity(A, A_tilde, q2, ml, q_over_p)
+    J_h: dict[str | int, float] = angular.angularcoeffs_h_transversity(A, A_tilde, q2, ml, q_over_p)
+    J_s: dict[str | int, float] = angular.angularcoeffs_s_transversity(A, A_tilde, q2, ml, q_over_p)
     return function(y, x, gamma, J, J_bar, J_h, J_s)
 
 def bsvll_obs_int_t(function, tmin, tmax, q2, wc_obj, par, B, V, lep):
