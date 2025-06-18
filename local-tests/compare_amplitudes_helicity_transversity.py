@@ -120,7 +120,7 @@ def main() -> None:
     for j, obs in enumerate(obses):
         ax = axs[j // 3, j % 3]
         ax.plot(q2_arr, amp_arr_h_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
-        ax.plot(q2_arr, amp_arr_h_trans[obs], label=r'Transversity Amplitudes $\times -1$', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, amp_arr_h_trans[obs], label=r'Transversity Amplitudes', color='darkturquoise', linestyle='--')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$h_{obs}$')
         ax.legend()
@@ -132,13 +132,29 @@ def main() -> None:
     for j, obs in enumerate(obses):
         ax = axs[j // 3, j % 3]
         ax.plot(q2_arr, amp_arr_s_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
-        ax.plot(q2_arr, amp_arr_s_trans[obs], label=r'Transversity Amplitudes $\times -1$', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, amp_arr_s_trans[obs], label=r'Transversity Amplitudes', color='darkturquoise', linestyle='--')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$s_{obs}$')
         ax.legend()
     fig.tight_layout()
     plt.savefig('plots/comparison_s_helicity_transversity.pdf', transparent=True)
     print('Saved figure to plots/comparison_s_helicity_transversity.pdf')
+
+    fig, ax = plt.subplots()
+    ax.plot(q2_arr, amp_arr_h_hel['6s'], label=r'$H_X$', color='red', linestyle='-')
+    ax.plot(q2_arr, amp_arr_h_trans['6s'], label=r'$A_X$', color='darkturquoise', linestyle='--')
+    ax.set_xlabel(r'$q^2$ [GeV$^2$]')
+    ax.set_ylabel(r'$h_{6s}$')
+    ax.legend()
+    fig.savefig('plots/comp_h6s_hel_trans.pdf', transparent=True)
+
+    fig, ax = plt.subplots()
+    ax.plot(q2_arr, amp_arr_h_hel[7], label=r'$H_X$', color='red', linestyle='-')
+    ax.plot(q2_arr, amp_arr_h_trans[7], label=r'$A_X$', color='darkturquoise', linestyle='--')
+    ax.set_xlabel(r'$q^2$ [GeV$^2$]')
+    ax.set_ylabel(r'$h_7$')
+    ax.legend()
+    fig.savefig('plots/comp_h7_hel_trans.pdf', transparent=True)
 
     # Q8 minus = s_8 / sqrt( -2 * ( J_2c + Jtilde_2c ) * ( 2 * (J_2s + Jtilde_2s) - (J_3 + Jtilde_3) ) ) -> note Jtilde_3 = -Jbar_3, others are same sign
     Q8mi = amp_arr_s_trans[8] / np.sqrt( -2 * ( amp_arr_trans['2c'] + amp_arr_bar_trans['2c'] ) * ( 2 * ( amp_arr_trans['2s'] + amp_arr_bar_trans['2s'] ) - ( amp_arr_trans[3] - amp_arr_bar_trans[3] ) ) )
@@ -153,7 +169,7 @@ def main() -> None:
     Q9_paper_lower, Q9_paper_upper = Q9_paper(q2_arr_paper)
 
     fig, ax = plt.subplots()
-    ax.plot(q2_arr, Q8mi, label=r'Transversity Amplitude $\times -1$', color='darkturquoise', linestyle='--')
+    ax.plot(q2_arr, Q8mi, label=r'Transversity Amplitude', color='darkturquoise', linestyle='--')
     ax.plot(q2_arr, Q8mi_hel, label='Helicity Amplitude', color='blue', linestyle=':')
     ax.fill_between(q2_arr_paper, Q8mi_paper_lower, Q8mi_paper_upper, color='orange', alpha=0.75, label='DGV [1502.05509]')
     ax.set_xlabel(r'$q^2$ [GeV$^2$]')
@@ -164,7 +180,7 @@ def main() -> None:
     print('Saved figure to plots/comparison_Q8mi_helicity_transversity.pdf')
 
     fig, ax = plt.subplots()
-    ax.plot(q2_arr, Q9, label=r'Transversity Amplitude $\times -1$', color='darkturquoise', linestyle='--')
+    ax.plot(q2_arr, Q9, label=r'Transversity Amplitude', color='darkturquoise', linestyle='--')
     ax.plot(q2_arr, Q9_hel, label='Helicity Amplitude', color='blue', linestyle=':')
     ax.fill_between(q2_arr_paper, Q9_paper_lower, Q9_paper_upper, color='orange', alpha=0.75, label='DGV [1502.05509]')
     ax.set_xlabel(r'$q^2$ [GeV$^2$]')
