@@ -210,6 +210,7 @@ def angularcoeffs_h_Gbasis_v(phi, H, Htilde, q2, mB, mV, mqh, mql, ml1, ml2):
 
     G[2,2,0] = (-2/9 * laGa/q2 * (2 * _Re(-qp * Htilde['pl','V'] * CH['pl','V'])+2 * _Re(-qp * Htilde['mi','V'] * CH['mi','V'])+4 * 2 * _Re(-qp * Htilde['0','V'] * CH['0','V'])+2 * _Re(-qp * Htilde['pl','A'] * CH['pl','A'])+2 * _Re(-qp * Htilde['mi','A'] * CH['mi','A'])
     +4 * 2 * _Re(-qp * Htilde['0','A'] * CH['0','A'])-2 * (2 * _Re(-qp * Htilde['pl','T'] * CH['pl','T'])+2 * _Re(-qp * Htilde['mi','T'] * CH['mi','T'])+4 * 2 * _Re(-qp * Htilde['0','T'] * CH['0','T']))-4 * (2 * _Re(-qp * Htilde['pl','Tt'] * CH['pl','Tt'])+2 * _Re(-qp * Htilde['mi','Tt'] * CH['mi','Tt'])+4 * 2 * _Re(-qp * Htilde['0','Tt'] * CH['0','Tt']))))
+    
     G[2,1,1] = (4/sqrt(3) * sqrt(laGa) * ((-qp * Htilde['pl','V']  * CH['0','A'] + _Co(-qp) * H['pl','V']  * CHtilde['0','A'])+(-qp * Htilde['pl','A']  * CH['0','V'] + _Co(-qp) * H['pl','A']  * CHtilde['0','V'])-(-qp * Htilde['0','V']  * CH['mi','A'] + _Co(-qp) * H['0','V']  * CHtilde['mi','A'])-(-qp * Htilde['0','A']  * CH['mi','V'] + _Co(-qp) * H['0','A']  * CHtilde['mi','V'])
     +(ml1+ml2)/sqrt(q2) * ((-qp * Htilde['pl','V']  * CH['S'] + _Co(-qp) * H['pl','V']  * CHtilde['S'])+(-qp * Htilde['S']  * CH['mi','V'] + _Co(-qp) * H['S']  * CHtilde['mi','V']))-sqrt(2) * 1j * ((-qp * Htilde['P']  * CH['mi','T'] + _Co(-qp) * H['P']  * CHtilde['mi','T'])-(-qp * Htilde['pl','T']  * CH['P'] + _Co(-qp) * H['pl','T']  * CHtilde['P'])
     +sqrt(2)*((-qp * Htilde['S']  * CH['mi','Tt'] + _Co(-qp) * H['S']  * CHtilde['mi','Tt'])-(-qp * Htilde['pl','Tt']  * CH['S'] + _Co(-qp) * H['pl','Tt']  * CHtilde['S'])))
@@ -217,6 +218,7 @@ def angularcoeffs_h_Gbasis_v(phi, H, Htilde, q2, mB, mV, mqh, mql, ml1, ml2):
     -2 * 1j * (ml1+ml2)/sqrt(q2) * ((-qp * Htilde['pl','A']  * CH['0','Tt'] + _Co(-qp) * H['pl','A']  * CHtilde['0','Tt'])+(-qp * Htilde['0','Tt']  * CH['mi','A'] + _Co(-qp) * H['0','Tt']  * CHtilde['mi','A'])-(-qp * Htilde['pl','Tt']  * CH['0','A'] + _Co(-qp) * H['pl','Tt']  * CHtilde['0','A'])-(-qp * Htilde['0','A']  * CH['mi','Tt'] + _Co(-qp) * H['0','A']  * CHtilde['mi','Tt']))
     -sqrt(2) * 1j * (ml1-ml2)/sqrt(q2) * ((-qp * Htilde['pl','V']  * CH['0','T'] + _Co(-qp) * H['pl','V']  * CHtilde['0','T'])+(-qp * Htilde['0','T']  * CH['mi','V'] + _Co(-qp) * H['0','T']  * CHtilde['mi','V'])-(-qp * Htilde['pl','T']  * CH['0','V'] + _Co(-qp) * H['pl','T']  * CHtilde['0','V'])-(-qp * Htilde['0','V']  * CH['mi','T'] + _Co(-qp) * H['0','V']  * CHtilde['mi','T']))
     +2 * sqrt(2) * (ml1**2-ml2**2)/q2 * ((-qp * Htilde['pl','T']  * CH['0','Tt'] + _Co(-qp) * H['pl','T']  * CHtilde['0','Tt'])+(-qp * Htilde['pl','Tt']  * CH['0','T'] + _Co(-qp) * H['pl','Tt']  * CHtilde['0','T'])-(-qp * Htilde['0','T']  * CH['mi','Tt'] + _Co(-qp) * H['0','T']  * CHtilde['mi','Tt'])-(-qp * Htilde['0','Tt']  * CH['mi','T'] + _Co(-qp) * H['0','Tt']  * CHtilde['mi','T']))))
+
     G[2,2,1] = (4/3 * laGa/q2 * ((-qp * Htilde['pl','V']  * CH['0','V'] + _Co(-qp) * H['pl','V']  * CHtilde['0','V'])+(-qp * Htilde['0','V']  * CH['mi','V'] + _Co(-qp) * H['0','V']  * CHtilde['mi','V'])+(-qp * Htilde['pl','A']  * CH['0','A'] + _Co(-qp) * H['pl','A']  * CHtilde['0','A'])+(-qp * Htilde['0','A']  * CH['mi','A'] + _Co(-qp) * H['0','A']  * CHtilde['mi','A'])
     -2 * ((-qp * Htilde['pl','T']  * CH['0','T'] + _Co(-qp) * H['pl','T']  * CHtilde['0','T'])+(-qp * Htilde['0','T']  * CH['mi','T'] + _Co(-qp) * H['0','T']  * CHtilde['mi','T'])+2 * ((-qp * Htilde['pl','Tt']  * CH['0','Tt'] + _Co(-qp) * H['pl','Tt']  * CHtilde['0','Tt'])+(-qp * Htilde['0','Tt']  * CH['mi','Tt'] + _Co(-qp) * H['0','Tt']  * CHtilde['mi','Tt'])))))
     G[2,2,2] = -8/3 * laGa/q2 * ((-qp * Htilde['pl','V']  * CH['mi','V'] + _Co(-qp) * H['pl','V']  * CHtilde['mi','V'])+(-qp * Htilde['pl','A']  * CH['mi','A'] + _Co(-qp) * H['pl','A']  * CHtilde['mi','A'])-2 * ((-qp * Htilde['pl','T']  * CH['mi','T'] + _Co(-qp) * H['pl','T']  * CHtilde['mi','T'])+2 * (-qp * Htilde['pl','Tt']  * CH['mi','Tt'] + _Co(-qp) * H['pl','Tt']  * CHtilde['mi','Tt'])))
@@ -534,6 +536,7 @@ def angularcoeffs_h_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
     Returns the angular coefficients h_i from the transversity amplitudes. 
     Compare e.g. https://arxiv.org/pdf/1502.05509 Appendix C, EQ 117 and following. 
     """
+    qp = -qp
     beta_l = sqrt(1 - 4 * ml**2 / q2)
     beta_l2 = 1 - 4 * ml**2 / q2
 
@@ -573,7 +576,7 @@ def angularcoeffs_h_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
         8: beta_l2 / sqrt(2) * _Im( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (127)
         9: -beta_l2 * _Im( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (128)
     }
-    return {key: -1 * element for key, element in h.items()}
+    return h
 
 
 def angularcoeffs_s_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float]: 
@@ -581,6 +584,7 @@ def angularcoeffs_s_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
     Returns the angular coefficients h_i from the transversity amplitudes. 
     Compare e.g. https://arxiv.org/pdf/1502.05509 Appendix C, EQ 105 and following. 
     """
+    qp = -qp
     beta_l = sqrt(1 - 4 * ml**2 / q2)
     beta_l2 = 1 - 4 * ml**2 / q2
 
@@ -603,5 +607,5 @@ def angularcoeffs_s_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
         8: -beta_l2 / sqrt(2) * _Re( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) - _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (115)
         9: beta_l2 * _Re( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) - _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (116)
     }    
-    return {key: -1 * element for key, element in s.items()}
+    return s
 
