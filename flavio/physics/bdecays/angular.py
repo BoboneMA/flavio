@@ -45,28 +45,30 @@ def transversity_amps(q2, mB, mV, mqh, mql, ml1, ml2, ff, wc, prefactor):
     def lambda_qsq(q2, mB, mV):
         return ((mB + mV)**2 - q2) * ((mB - mV)**2 - q2)  # (D.3) in https://arxiv.org/pdf/1503.05534
     lambda_b = lambda_K(mB**2, mV**2, q2)
-    wc['9'] = wc['v']
-    wc['9p'] = wc['vp']
-    wc['10'] = wc['a']
-    wc['10p'] = wc['ap']
+    wc_9 = wc['v']
+    wc_9p = wc['vp']
+    wc_10 = wc['a']
+    wc_10p = wc['ap']
+    wc_7, wc_7p = wc['7'], wc['7p']
+    wc_p, wc_pp = wc['p'], wc['pp']
 
     # (D.5) in https://arxiv.org/pdf/1503.05534
     ff['A2'] = -(mB + mV)*(-ff['A1']*mB**3 - ff['A1']*mB**2*mV + ff['A1']*mB*mV**2 + ff['A1']*mB*q2 + ff['A1']*mV**3 + ff['A1']*mV*q2 + 16*ff['A12']*mB*mV**2)/lambda_qsq(q2, mB, mV)
     ff['T3'] = -(mB - mV)*(-ff['T2']*mB**3 - ff['T2']*mB**2*mV - 3*ff['T2']*mB*mV**2 + ff['T2']*mB*q2 - 3*ff['T2']*mV**3 + ff['T2']*mV*q2 + 8*ff['T23']*mB*mV**2)/lambda_qsq(q2, mB, mV)
 
     # from https://arxiv.org/pdf/0811.1214
-    a0_l_term_one = ( (wc['9'] - wc['9p']) - (wc['10'] - wc['10p']) ) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  # first summand of (3.30)
-    a0_r_term_one = ( (wc['9'] - wc['9p']) + (wc['10'] - wc['10p']) ) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  
-    a0_term_two = 2 * mqh * (wc['7'] - wc['7p']) * ( ( mB**2 + 3 * mV**2 - q2 ) * ff['T2'] - lambda_b / (mB**2 - mV**2) * ff['T3'] )  # second summand of (3.30) 
+    a0_l_term_one = ( (wc_9 - wc_9p) - (wc_10 - wc_10p) ) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  # first summand of (3.30)
+    a0_r_term_one = ( (wc_9 - wc_9p) + (wc_10 - wc_10p) ) * ( (mB**2 - mV**2 - q2) * (mB + mV) * ff['A1'] - lambda_b * ff['A2'] / (mB + mV) )  
+    a0_term_two = 2 * mqh * (wc_7 - wc_7p) * ( ( mB**2 + 3 * mV**2 - q2 ) * ff['T2'] - lambda_b / (mB**2 - mV**2) * ff['T3'] )  # second summand of (3.30) 
 
     transversity_amps = {
-        'perp_L': sqrt(2 * lambda_b) * ( ( (wc['9'] + wc['9p']) - (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 * (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
-        'perp_R': sqrt(2 * lambda_b) * ( ( (wc['9'] + wc['9p']) + (wc['10'] + wc['10p'])) * ff['V']/(mB + mV) + 2 * mqh / q2 * (wc['7'] + wc['7p']) * ff['T1'] ),  # (3.28)
-        'para_L': sqrt(2) * (mB**2 - mV**2) * ( ((wc['9'] - wc['9p']) - (wc['10'] - wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
-        'para_R': sqrt(2) * (mB**2 - mV**2) * ( ((wc['9'] - wc['9p']) + (wc['10'] - wc['10p'])) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc['7'] - wc['7p']) * ff['T2'] ),  # (3.29)
+        'perp_L': sqrt(2 * lambda_b) * ( ( (wc_9 + wc_9p) - (wc_10 + wc_10p)) * ff['V']/(mB + mV) + 2 * mqh / q2 * (wc_7 + wc_7p) * ff['T1'] ),  # (3.28)
+        'perp_R': sqrt(2 * lambda_b) * ( ( (wc_9 + wc_9p) + (wc_10 + wc_10p)) * ff['V']/(mB + mV) + 2 * mqh / q2 * (wc_7 + wc_7p) * ff['T1'] ),  # (3.28)
+        'para_L': -sqrt(2) * (mB**2 - mV**2) * ( ((wc_9 - wc_9p) - (wc_10 - wc_10p)) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc_7 - wc_7p) * ff['T2'] ),  # (3.29)
+        'para_R': -sqrt(2) * (mB**2 - mV**2) * ( ((wc_9 - wc_9p) + (wc_10 - wc_10p)) * ff['A1']/(mB - mV) + 2 * mqh / q2 * (wc_7 - wc_7p) * ff['T2'] ),  # (3.29)
         '0_L': - 1 / (2 * mV * sqrt(q2)) * ( a0_l_term_one + a0_term_two ),  # (3.30)
         '0_R': - 1 / (2 * mV * sqrt(q2)) * ( a0_r_term_one + a0_term_two ),  # (3.30)
-        't': sqrt(lambda_b / q2) * ff['A0'] * ( 2 * (wc['10'] - wc['10p']) + q2 / ml1 * (wc['p'] - wc['pp']) ),  # (3.31)  
+        't': sqrt(lambda_b / q2) * ff['A0'] * ( 2 * (wc_10 - wc_10p) + q2 / ml1 * (wc_p - wc_pp) ),  # (3.31)  
         'S': - 2 * sqrt(lambda_b) * (wc['s'] - wc['sp']) * ff['A0'],  # (3.32)
     }
 
@@ -189,12 +191,23 @@ def angularcoeffs_h_Gbasis_v(phi, H, Htilde, q2, mB, mV, mqh, mql, ml1, ml2):
     -8/9 * (3 * (E1 * E2-ml1 * ml2)-laGa/(4 * q2)) * (2 * _Re(-qp * Htilde['pl','T'] * CH['pl','T'])+2 * _Re(-qp * Htilde['mi','T'] * CH['mi','T'])-2 * 2 * _Re(-qp * Htilde['0','T'] * CH['0','T']))
     -16/3 * (ml1 * E2+ml2 * E1) * _Im((-qp * Htilde['pl','V']  * CH['pl','Tt'] + _Co(-qp) * H['pl','V']  * CHtilde['pl','Tt'])+(-qp * Htilde['mi','V']  * CH['mi','Tt'] + _Co(-qp) * H['mi','V']  * CHtilde['mi','Tt'])-2 * (-qp * Htilde['0','V']  * CH['0','Tt'] + _Co(-qp) * H['0','V']  * CHtilde['0','Tt']))
     -8 * sqrt(2)/3 * (ml1 * E2-ml2 * E1) * _Im((-qp * Htilde['pl','A']  * CH['pl','T'] + _Co(-qp) * H['pl','A']  * CHtilde['pl','T'])+(-qp * Htilde['mi','A']  * CH['mi','T'] + _Co(-qp) * H['mi','A']  * CHtilde['mi','T'])-2 * (-qp * Htilde['0','A']  * CH['0','T'] + _Co(-qp) * H['0','A']  * CHtilde['0','T'])))
-    G[2,1,0] = (-4 * sqrt(laGa)/3 * (_Re((-qp * Htilde['pl','V']  * CH['pl','A'] + _Co(-qp) * H['pl','V']  * CHtilde['pl','A'])-(-qp * Htilde['mi','V']  * CH['mi','A'] + _Co(-qp) * H['mi','V']  * CHtilde['mi','A']))
+
+    G[2,1,0] = (-4 * sqrt(laGa)/3 * (_Re((-qp * Htilde['pl','V'] * CH['pl','A'] + _Co(-qp) * H['pl','V'] * CHtilde['pl','A']) - (-qp * Htilde['mi','V']  * CH['mi','A'] + _Co(-qp) * H['mi','V']  * CHtilde['mi','A']))
     +2 * sqrt(2) * (ml1**2-ml2**2)/q2 * _Re((-qp * Htilde['pl','T']  * CH['pl','Tt'] + _Co(-qp) * H['pl','T']  * CHtilde['pl','Tt'])-(-qp * Htilde['mi','T']  * CH['mi','Tt'] + _Co(-qp) * H['mi','T']  * CHtilde['mi','Tt']))
     +2 * (ml1+ml2)/sqrt(q2) * _Im((-qp * Htilde['pl','A']  * CH['pl','Tt'] + _Co(-qp) * H['pl','A']  * CHtilde['pl','Tt'])-(-qp * Htilde['mi','A']  * CH['mi','Tt'] + _Co(-qp) * H['mi','A']  * CHtilde['mi','Tt']))
     +sqrt(2) * (ml1-ml2)/sqrt(q2) * _Im((-qp * Htilde['pl','V']  * CH['pl','T'] + _Co(-qp) * H['pl','V']  * CHtilde['pl','T'])-(-qp * Htilde['mi','V']  * CH['mi','T'] + _Co(-qp) * H['mi','V']  * CHtilde['mi','T']))
     +2 * (ml1-ml2)/sqrt(q2) * _Re((-qp * Htilde['0','A']  * CH['P'] + _Co(-qp) * H['0','A']  * CHtilde['P']))+2 * (ml1+ml2)/sqrt(q2) * _Re((-qp * Htilde['0','V']  * CH['S'] + _Co(-qp) * H['0','V']  * CHtilde['S']))
     -2 * _Im(sqrt(2) * (-qp * Htilde['0','T']  * CH['P'] + _Co(-qp) * H['0','T']  * CHtilde['P'])+2 * (-qp * Htilde['0','Tt']  * CH['S'] + _Co(-qp) * H['0','Tt']  * CHtilde['S']))))
+    # G[2, 1, 0] = -4 * sqrt(laGa) / 3 * ( 
+    #     _Re( H['pl', 'V'] * CHtilde['pl', 'A'] - H['mi', 'V'] * CHtilde['mi', 'A'] )
+    #     + 2 * sqrt(2) * (ml1**2 - ml2**2) / q2 * _Im( H['pl', 'T'] * CHtilde['pl', 'Tt'] - H['mi', 'T'] * CHtilde['mi', 'Tt'] )  # == 0
+    #     + 2 * (ml1 + ml2) / sqrt(q2) * _Im( H['pl', 'A'] * CHtilde['pl', 'Tt'] - H['mi', 'A'] * CHtilde['mi', 'Tt'] )  
+    #     + sqrt(2) * (ml1 - ml2) / sqrt(q2) * _Im( H['pl', 'V'] * CHtilde['pl', 'T'] - H['mi', 'V'] * CHtilde['mi', 'T'] )  # == 0
+    #     + 2 * (ml1 - ml2) / sqrt(q2) * _Re( H['0', 'A'] * CHtilde['P'] )  # == 0
+    #     + 2 * (ml1 + ml2) / sqrt(q2) * _Re( H['0', 'V'] * CHtilde['S'] )
+    #     - 2 * _Im( sqrt(2) * H['0', 'T'] * CHtilde['P'] + 2 * H['0', 'Tt'] * CHtilde['S'] )
+    # )
+
     G[2,2,0] = (-2/9 * laGa/q2 * (2 * _Re(-qp * Htilde['pl','V'] * CH['pl','V'])+2 * _Re(-qp * Htilde['mi','V'] * CH['mi','V'])+4 * 2 * _Re(-qp * Htilde['0','V'] * CH['0','V'])+2 * _Re(-qp * Htilde['pl','A'] * CH['pl','A'])+2 * _Re(-qp * Htilde['mi','A'] * CH['mi','A'])
     +4 * 2 * _Re(-qp * Htilde['0','A'] * CH['0','A'])-2 * (2 * _Re(-qp * Htilde['pl','T'] * CH['pl','T'])+2 * _Re(-qp * Htilde['mi','T'] * CH['mi','T'])+4 * 2 * _Re(-qp * Htilde['0','T'] * CH['0','T']))-4 * (2 * _Re(-qp * Htilde['pl','Tt'] * CH['pl','Tt'])+2 * _Re(-qp * Htilde['mi','Tt'] * CH['mi','Tt'])+4 * 2 * _Re(-qp * Htilde['0','Tt'] * CH['0','Tt']))))
     G[2,1,1] = (4/sqrt(3) * sqrt(laGa) * ((-qp * Htilde['pl','V']  * CH['0','A'] + _Co(-qp) * H['pl','V']  * CHtilde['0','A'])+(-qp * Htilde['pl','A']  * CH['0','V'] + _Co(-qp) * H['pl','A']  * CHtilde['0','V'])-(-qp * Htilde['0','V']  * CH['mi','A'] + _Co(-qp) * H['0','V']  * CHtilde['mi','A'])-(-qp * Htilde['0','A']  * CH['mi','V'] + _Co(-qp) * H['0','A']  * CHtilde['mi','V'])
@@ -513,9 +526,7 @@ def angularcoeffs_general_transversity(A, q2, ml):
         9: beta_l**2  * ( _Im( _Co(A['para_L']) * A['perp_L'] + _Co(A['para_R']) * A['perp_R'] ) ),
         # 7, 8, 9 differ between https://arxiv.org/pdf/1502.05509 (this version) https://arxiv.org/pdf/0811.1214 (suspect parenthesis typo with L->R writing)
     }
-    signs = {'1s': 1, '1c': 1, '2s': 1, '2c': 1, 3: 1,
-             4: -1, 5: 1, '6s': -1, '6c': -1, 7: -1, 8: 1, 9: -1}
-    return {key: signs[key] * el for key, el in J.items()}
+    return J
 
 
 def angularcoeffs_h_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float]: 
@@ -562,10 +573,7 @@ def angularcoeffs_h_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
         8: beta_l2 / sqrt(2) * _Im( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (127)
         9: -beta_l2 * _Im( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) + _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (128)
     }
-    signs = {'1s': 1, '1c': 1, '2s': 1, '2c': 1, 3: 1,
-             4: -1, 5: 1, '6s': -1, '6c': -1, 7: -1, 8: 1, 9: -1}
-
-    return {key: -1 * signs[key] * element for key, element in h.items()}
+    return {key: -1 * element for key, element in h.items()}
 
 
 def angularcoeffs_s_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float]: 
@@ -595,7 +603,5 @@ def angularcoeffs_s_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
         8: -beta_l2 / sqrt(2) * _Re( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) - _Co(qp) * ( A['0_L'] * _Co(Atilde['perp_L']) + A['0_R'] * _Co(Atilde['perp_R']) ) ),  # (115)
         9: beta_l2 * _Re( qp * ( Atilde['para_L'] * _Co(A['perp_L']) + Atilde['para_R'] * _Co(A['perp_R']) ) - _Co(qp) * ( A['para_L'] * _Co(Atilde['perp_L']) + A['para_R'] * _Co(Atilde['perp_R']) ) ),  # (116)
     }    
-    signs = {'1s': 1, '1c': 1, '2s': 1, '2c': 1, 3: 1,
-             4: -1, 5: 1, '6s': -1, '6c': -1, 7: -1, 8: 1, 9: -1}
-    return {key: -1 * signs[key] * element for key, element in s.items()}
+    return {key: -1 * element for key, element in s.items()}
 
