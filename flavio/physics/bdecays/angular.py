@@ -261,21 +261,21 @@ def angularcoeffs_h_Gbasis_v(phi, H, Htilde, q2, mB, mV, mqh, mql, ml1, ml2):
     # -2 * 1j * (ml1+ml2)/sqrt(q2) * ((-qp * Htilde['pl','A']  * CH['0','Tt'] + _Co(-qp) * H['pl','A']  * CHtilde['0','Tt'])+(-qp * Htilde['0','Tt']  * CH['mi','A'] + _Co(-qp) * H['0','Tt']  * CHtilde['mi','A'])-(-qp * Htilde['pl','Tt']  * CH['0','A'] + _Co(-qp) * H['pl','Tt']  * CHtilde['0','A'])-(-qp * Htilde['0','A']  * CH['mi','Tt'] + _Co(-qp) * H['0','A']  * CHtilde['mi','Tt']))
     # -sqrt(2) * 1j * (ml1-ml2)/sqrt(q2) * ((-qp * Htilde['pl','V']  * CH['0','T'] + _Co(-qp) * H['pl','V']  * CHtilde['0','T'])+(-qp * Htilde['0','T']  * CH['mi','V'] + _Co(-qp) * H['0','T']  * CHtilde['mi','V'])-(-qp * Htilde['pl','T']  * CH['0','V'] + _Co(-qp) * H['pl','T']  * CHtilde['0','V'])-(-qp * Htilde['0','V']  * CH['mi','T'] + _Co(-qp) * H['0','V']  * CHtilde['mi','T']))
     # +2 * sqrt(2) * (ml1**2-ml2**2)/q2 * ((-qp * Htilde['pl','T']  * CH['0','Tt'] + _Co(-qp) * H['pl','T']  * CHtilde['0','Tt'])+(-qp * Htilde['pl','Tt']  * CH['0','T'] + _Co(-qp) * H['pl','Tt']  * CHtilde['0','T'])-(-qp * Htilde['0','T']  * CH['mi','Tt'] + _Co(-qp) * H['0','T']  * CHtilde['mi','Tt'])-(-qp * Htilde['0','Tt']  * CH['mi','T'] + _Co(-qp) * H['0','Tt']  * CHtilde['mi','T']))))
-    G[2, 1, 1] = 4 / sqrt(3) * sqrt(laGa) * (
-        ( thelper(('pl', 'V'), ('0', 'A')) + thelper(('pl', 'A'), ('0', 'V')) - thelper(('0', 'V'), ('mi', 'A')) - thelper(('0', 'A'), ('mi', 'V')) ) 
-        + mhat * ( thelper(('pl', 'V'), 'S') + thelper('S', ('mi', 'V')) )
-        + dm * ( thelper(('pl', 'A'), 'P') + thelper('P', ('mi', 'A')) )
-        - sqrt(2) * 1j * ( thelper('P', ('mi', 'T')) - thelper(('pl', 'T'), 'P') + sqrt(2) * ( thelper('S', ('mi', 'Tt')) - thelper(('pl', 'Tt'), 'S') ) )
-        - 2j * mhat * ( thelper(('pl', 'A'), ('0', 'Tt')) + thelper(('0', 'Tt'), ('mi', 'A')) - thelper(('pl', 'Tt'), ('0', 'A')) - thelper(('0', 'A'), ('mi', 'Tt')) )
-        - sqrt(2) * 1j * dm * ( thelper(('pl', 'V'), ('0', 'T')) + thelper(('0', 'T'), ('mi', 'V')) - thelper(('pl', 'T'), ('0', 'V')) - thelper(('0', 'V'), ('mi', 'T')) )
-        + 2 * sqrt(2) * dm2 * ( thelper(('pl', 'T'), ('0', 'Tt')) + thelper(('pl', 'Tt'), ('0', 'T')) - thelper(('0', 'T'), ('mi', 'Tt')) - thelper(('0', 'Tt'), ('mi', 'T')) )
-    )
-    # G[2, 1, 1] = 4 * beta_l / sqrt(3) * (
-    #     ( thelper(('pl', 'V'), ('0', 'A')) + thelper(('pl', 'A'), ('0', 'V')) - thelper(('0', 'V'), ('mi', 'A')) - thelper(('0', 'A'), ('mi', 'V')) )
+    # G[2, 1, 1] = 4 / sqrt(3) * sqrt(laGa) * (
+    #     ( thelper(('pl', 'V'), ('0', 'A')) + thelper(('pl', 'A'), ('0', 'V')) - thelper(('0', 'V'), ('mi', 'A')) - thelper(('0', 'A'), ('mi', 'V')) ) 
     #     + mhat * ( thelper(('pl', 'V'), 'S') + thelper('S', ('mi', 'V')) )
+    #     + dm * ( thelper(('pl', 'A'), 'P') + thelper('P', ('mi', 'A')) )
     #     - sqrt(2) * 1j * ( thelper('P', ('mi', 'T')) - thelper(('pl', 'T'), 'P') + sqrt(2) * ( thelper('S', ('mi', 'Tt')) - thelper(('pl', 'Tt'), 'S') ) )
-    #     - 2 * mhat * 1j * ( thelper(('pl', 'A'), ('0', 'Tt')) + thelper(('0', 'Tt'), ('mi', 'A')) - thelper(('pl', 'Tt'), ('0', 'A')) - thelper(('0', 'A'), ('mi', 'Tt')) )
+    #     - 2j * mhat * ( thelper(('pl', 'A'), ('0', 'Tt')) + thelper(('0', 'Tt'), ('mi', 'A')) - thelper(('pl', 'Tt'), ('0', 'A')) - thelper(('0', 'A'), ('mi', 'Tt')) )
+    #     - sqrt(2) * 1j * dm * ( thelper(('pl', 'V'), ('0', 'T')) + thelper(('0', 'T'), ('mi', 'V')) - thelper(('pl', 'T'), ('0', 'V')) - thelper(('0', 'V'), ('mi', 'T')) )
+    #     + 2 * sqrt(2) * dm2 * ( thelper(('pl', 'T'), ('0', 'Tt')) + thelper(('pl', 'Tt'), ('0', 'T')) - thelper(('0', 'T'), ('mi', 'Tt')) - thelper(('0', 'Tt'), ('mi', 'T')) )
     # )
+    G[2, 1, 1] = 4 * beta_l / sqrt(3) * (
+        ( thelper(('pl', 'V'), ('0', 'A')) + thelper(('pl', 'A'), ('0', 'V')) - thelper(('0', 'V'), ('mi', 'A')) - thelper(('0', 'A'), ('mi', 'V')) )
+        + mhat * ( thelper(('pl', 'V'), 'S') + thelper('S', ('mi', 'V')) )
+        - sqrt(2) * 1j * ( thelper('P', ('mi', 'T')) - thelper(('pl', 'T'), 'P') + sqrt(2) * ( thelper('S', ('mi', 'Tt')) - thelper(('pl', 'Tt'), 'S') ) )
+        - 2 * mhat * 1j * ( thelper(('pl', 'A'), ('0', 'Tt')) + thelper(('0', 'Tt'), ('mi', 'A')) - thelper(('pl', 'Tt'), ('0', 'A')) - thelper(('0', 'A'), ('mi', 'Tt')) )
+    ) * q2
 
     G[2,2,1] = (4/3 * laGa/q2 * ((-qp * Htilde['pl','V']  * CH['0','V'] + _Co(-qp) * H['pl','V']  * CHtilde['0','V'])+(-qp * Htilde['0','V']  * CH['mi','V'] + _Co(-qp) * H['0','V']  * CHtilde['mi','V'])+(-qp * Htilde['pl','A']  * CH['0','A'] + _Co(-qp) * H['pl','A']  * CHtilde['0','A'])+(-qp * Htilde['0','A']  * CH['mi','A'] + _Co(-qp) * H['0','A']  * CHtilde['mi','A'])
     -2 * ((-qp * Htilde['pl','T']  * CH['0','T'] + _Co(-qp) * H['pl','T']  * CHtilde['0','T'])+(-qp * Htilde['0','T']  * CH['mi','T'] + _Co(-qp) * H['0','T']  * CHtilde['mi','T'])+2 * ((-qp * Htilde['pl','Tt']  * CH['0','Tt'] + _Co(-qp) * H['pl','Tt']  * CHtilde['0','Tt'])+(-qp * Htilde['0','Tt']  * CH['mi','Tt'] + _Co(-qp) * H['0','Tt']  * CHtilde['mi','Tt'])))))
