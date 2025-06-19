@@ -638,7 +638,7 @@ def angularcoeffs_h_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
         '6c': 4 * beta_l * ml / sqrt(q2) * _Re( qp * ( Atilde['0_L'] * _Co(A['S'] + Atilde['0_R'] * _Co(A['S'])) ) 
                                                + _Co(qp) * ( A['0_L'] * _Co(Atilde['S']) + A['0_R'] * _Co(Atilde['S']) ) ),  # (125)
         7: sqrt(2) * beta_l * ( 
-            _Im( qp * ( Atilde['0_L'] * _Co(A['para_L'] - Atilde['0_R'] * _Co(A['para_R'])) ) 
+            _Im( qp * ( Atilde['0_L'] * _Co(A['para_L']) - Atilde['0_R'] * _Co(A['para_R']) ) 
                 + _Co(qp) * ( A['0_L'] * _Co(Atilde['para_L']) - A['0_R'] * _Co(Atilde['para_R']) ) ) 
             + ml / sqrt(q2) * _Im( qp * ( Atilde['perp_L'] * _Co(A['S']) + Atilde['perp_R'] * _Co(A['S']) ) 
                                   + _Co(qp) * ( A['perp_L'] * _Co(Atilde['S']) + A['perp_R'] * _Co(Atilde['S']) ) ) 
@@ -685,7 +685,7 @@ def angularcoeffs_s_transversity(A, Atilde, q2, ml, qp) -> dict[str | int, float
         '6c': 4 * beta_l * ml / sqrt(q2) * _Im( qp * ( Atilde['0_L'] * _Co(A['S']) + Atilde['0_R'] * _Co(A['S']) ) 
         - _Co(qp) * ( A['0_L'] * _Co(Atilde['S']) + A['0_R'] * _Co(Atilde['S']) ) ),  # (113)
         7: -sqrt(2) * beta_l * ( _Re( qp * ( Atilde['0_L'] * _Co(A['para_L']) - Atilde['0_R'] * _Co(A['para_R']) ) 
-        - _Co(qp) * ( A['0_L'] * _Co(Atilde['para_L']) - A['0_R'] * _Co(Atilde['para_R']) ) ) 
+                                     - _Co(qp) * ( A['0_L'] * _Co(Atilde['para_L']) - A['0_R'] * _Co(Atilde['para_R']) ) ) 
                                 + ml / sqrt(q2) * _Re( qp * ( Atilde['perp_L'] * _Co(A['S']) + Atilde['perp_R'] * _Co(A['S']) ) 
                                                       - _Co(qp) * ( A['perp_L'] * _Co(Atilde['S']) + A['perp_R'] * _Co(Atilde['S']) ) ) ),  # (114)
         8: -beta_l2 / sqrt(2) * _Re( qp * ( Atilde['0_L'] * _Co(A['perp_L']) + Atilde['0_R'] * _Co(A['perp_R']) ) 
