@@ -23,6 +23,9 @@ def main() -> None:
     q2_arr = np.linspace(q2_min, q2_max, npoints)
 
     fl_pars = flavio.default_parameters.get_central_all()
+    flavio.physics.bdecays.formfactors.b_v.bsz_parameters.bsz_load('v2', 'LCSR', ('B->rho', 'Bs->phi', 'B->K*'), flavio.default_parameters)
+    fl_lcsr_pars = flavio.default_parameters.get_central_all()
+    flavio.physics.bdecays.formfactors.b_v.bsz_parameters.bsz_load('v2', 'LCSR-Lattice', ('Bs->phi', 'B->K*'), flavio.default_parameters)
     wc_obj = flavio.WilsonCoefficients()
     # wc_dict = {
     #     'C9_bsmumu': 4.0749,
@@ -38,27 +41,36 @@ def main() -> None:
     amplitudes_transversity = np.array([observables_bs.bsvll_obs_trans(get_amplitudes, q2, wc_obj, fl_pars, B_meson, V_meson, lepton) for q2 in q2_arr])
     amplitudes_bs_helicity = np.array([observables_bs.bsvll_obs(get_amplitudes, q2, wc_obj, fl_pars, B_meson, V_meson, lepton) for q2 in q2_arr])
 
+    amplitudes_bs_trans_lcsr = np.array([observables_bs.bsvll_obs(get_amplitudes, q2, wc_obj, fl_lcsr_pars, B_meson, V_meson, lepton) for q2 in q2_arr])
+
     obses = ['1s', '1c', '2s', '2c', 3, 4, 5, '6s', '6c', 7, 8, 9]
     amp_arr_hel = {key: np.asarray([d[0][key] for d in amplitudes_helicity]) for key in obses}
     amp_arr_trans = {key: np.asarray([d[3][key] for d in amplitudes_transversity]) for key in obses}
+    amp_arr_trans_lcsr = {key: np.asarray([d[3][key] for d in amplitudes_bs_trans_lcsr]) for key in obses}
     amp_arr_bs_hel = {key: np.asarray([d[3][key] for d in amplitudes_bs_helicity]) for key in obses}
 
     amp_arr_bar_hel = {key: np.asarray([d[1][key] for d in amplitudes_helicity]) for key in obses}
     amp_arr_bar_trans = {key: np.asarray([d[4][key] for d in amplitudes_transversity]) for key in obses}
+    amp_arr_bar_trans_lcsr = {key: np.asarray([d[4][key] for d in amplitudes_bs_trans_lcsr]) for key in obses}
     amp_arr_bar_bs_hel = {key: np.asarray([d[4][key] for d in amplitudes_bs_helicity]) for key in obses}
 
     amp_arr_h_hel, amp_arr_s_hel = {key: [] for key in obses}, {key: [] for key in obses}
     amp_arr_h_trans, amp_arr_s_trans = {key: [] for key in obses}, {key: [] for key in obses}
+    amp_arr_h_trans_lcsr, amp_arr_s_trans_lcsr = {key: [] for key in obses}, {key: [] for key in obses}
     for ctr_one in range(npoints):
         for key in obses:
             amp_arr_h_hel[key].append(amplitudes_bs_helicity[ctr_one][5][key])
             amp_arr_h_trans[key].append(amplitudes_transversity[ctr_one][5][key])
+            amp_arr_h_trans_lcsr[key].append(amplitudes_bs_trans_lcsr[ctr_one][5][key])
             amp_arr_s_hel[key].append(amplitudes_bs_helicity[ctr_one][6][key])
             amp_arr_s_trans[key].append(amplitudes_transversity[ctr_one][6][key])
+            amp_arr_s_trans_lcsr[key].append(amplitudes_bs_trans_lcsr[ctr_one][6][key])
     amp_arr_h_hel = {key: np.asarray(amp_arr_h_hel[key]) for key in obses}
     amp_arr_h_trans = {key: np.asarray(amp_arr_h_trans[key]) for key in obses}
+    amp_arr_h_trans_lcsr = {key: np.asarray(amp_arr_h_trans_lcsr[key]) for key in obses}
     amp_arr_s_hel = {key: np.asarray(amp_arr_s_hel[key]) for key in obses}
     amp_arr_s_trans = {key: np.asarray(amp_arr_s_trans[key]) for key in obses}
+    amp_arr_s_trans_lcsr = {key: np.asarray(amp_arr_s_trans_lcsr[key]) for key in obses}
 
     fig, axs = plt.subplots(4, 3, figsize=(25, 25))
 
@@ -67,6 +79,7 @@ def main() -> None:
         ax.plot(q2_arr, amp_arr_bs_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
         ax.plot(q2_arr, amp_arr_hel[obs], label='Helicity Amplitudes', color='blue', linestyle=':')
         ax.plot(q2_arr, amp_arr_trans[obs], label='Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, amp_arr_trans_lcsr[obs], label='Transversity Amplitudes (LCSR)', color='orange', linestyle=':')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$J_{obs}$')
         ax.legend()
@@ -82,6 +95,7 @@ def main() -> None:
         ax.plot(q2_arr, amp_arr_bar_bs_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
         ax.plot(q2_arr, amp_arr_bar_hel[obs], label='Helicity Amplitudes', color='blue', linestyle=':')
         ax.plot(q2_arr, amp_arr_bar_trans[obs], label='Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, amp_arr_bar_trans_lcsr[obs], label='Transversity Amplitudes (LCSR)', color='orange', linestyle=':')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(r'$\bar{J}'+f'_{obs}$')
         ax.legend()
@@ -93,9 +107,10 @@ def main() -> None:
     fig, axs = plt.subplots(4, 3, figsize=(25, 25))
     for j, obs in enumerate(obses):
         ax = axs[j // 3, j % 3]
-        ax.plot(q2_arr, amp_arr_bs_hel[obs] + amp_arr_bar_bs_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
-        ax.plot(q2_arr, amp_arr_hel[obs] + amp_arr_bar_hel[obs], label='Helicity Amplitudes', color='blue', linestyle=':')
-        ax.plot(q2_arr, amp_arr_trans[obs] + amp_arr_bar_trans[obs], label='Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, (amp_arr_bs_hel[obs] + amp_arr_bar_bs_hel[obs]), label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
+        ax.plot(q2_arr, (amp_arr_hel[obs] + amp_arr_bar_hel[obs]), label='Helicity Amplitudes', color='blue', linestyle=':')
+        ax.plot(q2_arr, (amp_arr_trans[obs] + amp_arr_bar_trans[obs]), label='Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, (amp_arr_trans_lcsr[obs] + amp_arr_bar_trans_lcsr[obs]), label='Transversity Amplitudes (LCSR)', color='orange', linestyle=':')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$J_{obs} + '+r'\bar{J}'+f'_{obs}$')
         ax.legend()
@@ -106,9 +121,10 @@ def main() -> None:
     fig, axs = plt.subplots(4, 3, figsize=(25, 25))
     for j, obs in enumerate(obses):
         ax = axs[j // 3, j % 3]
-        ax.plot(q2_arr, amp_arr_bs_hel[obs] - amp_arr_bar_bs_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
-        ax.plot(q2_arr, amp_arr_hel[obs] - amp_arr_bar_hel[obs], label='Helicity Amplitudes', color='blue', linestyle=':')
+        ax.plot(q2_arr, (amp_arr_bs_hel[obs] - amp_arr_bar_bs_hel[obs]), label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
+        ax.plot(q2_arr, (amp_arr_hel[obs] - amp_arr_bar_hel[obs]), label='Helicity Amplitudes', color='blue', linestyle=':')
         ax.plot(q2_arr, (amp_arr_trans[obs] - amp_arr_bar_trans[obs]), label='Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, (amp_arr_trans_lcsr[obs] - amp_arr_bar_trans_lcsr[obs]), label='Transversity Amplitudes (LCSR)', color='orange', linestyle=':')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$J_{obs} - '+r'\bar{J}'+f'_{obs}$')
         ax.legend()
@@ -121,6 +137,7 @@ def main() -> None:
         ax = axs[j // 3, j % 3]
         ax.plot(q2_arr, amp_arr_h_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
         ax.plot(q2_arr, amp_arr_h_trans[obs], label=r'Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, amp_arr_h_trans_lcsr[obs], label=r'Transversity Amplitudes (LCSR)', color='orange', linestyle=':')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$h_{obs}$')
         ax.legend()
@@ -133,6 +150,7 @@ def main() -> None:
         ax = axs[j // 3, j % 3]
         ax.plot(q2_arr, amp_arr_s_hel[obs], label='$B_s^0$ Helicity Amplitudes', color='red', linestyle='-')
         ax.plot(q2_arr, amp_arr_s_trans[obs], label=r'Transversity Amplitudes', color='darkturquoise', linestyle='--')
+        ax.plot(q2_arr, amp_arr_s_trans_lcsr[obs], label=r'Transversity Amplitudes (LCSR)', color='orange', linestyle=':')
         ax.set_xlabel(r'$q^2$ [GeV$^2$]')
         ax.set_ylabel(f'$s_{obs}$')
         ax.legend()
@@ -158,8 +176,10 @@ def main() -> None:
 
     # Q8 minus = s_8 / sqrt( -2 * ( J_2c + Jtilde_2c ) * ( 2 * (J_2s + Jtilde_2s) - (J_3 + Jtilde_3) ) ) -> note Jtilde_3 = -Jbar_3, others are same sign
     Q8mi = amp_arr_s_trans[8] / np.sqrt( -2 * ( amp_arr_trans['2c'] + amp_arr_bar_trans['2c'] ) * ( 2 * ( amp_arr_trans['2s'] + amp_arr_bar_trans['2s'] ) - ( amp_arr_trans[3] - amp_arr_bar_trans[3] ) ) )
+    Q8mi_lcsr = amp_arr_s_trans_lcsr[8] / np.sqrt( -2 * ( amp_arr_trans_lcsr['2c'] + amp_arr_bar_trans_lcsr['2c'] ) * ( 2 * ( amp_arr_trans_lcsr['2s'] + amp_arr_bar_trans_lcsr['2s'] ) - ( amp_arr_trans_lcsr[3] - amp_arr_bar_trans_lcsr[3] ) ) )
     # Q9 = s_9 / 2 / (J_2s + Jtilde_2s)
     Q9 = amp_arr_s_trans[9] / 2 / (amp_arr_trans['2s'] + amp_arr_bar_trans['2s'])
+    Q9_lcsr = amp_arr_s_trans_lcsr[9] / 2 / (amp_arr_trans_lcsr['2s'] + amp_arr_bar_trans_lcsr['2s'])
 
     Q8mi_hel = amp_arr_s_hel[8] / np.sqrt( -2 * ( amp_arr_bs_hel['2c'] + amp_arr_bar_bs_hel['2c'] ) * ( 2 * ( amp_arr_bs_hel['2s'] + amp_arr_bar_bs_hel['2s'] ) - ( amp_arr_bs_hel[3] - amp_arr_bar_bs_hel[3] ) ) )
     Q9_hel = amp_arr_s_hel[9] / 2 / (amp_arr_bs_hel['2s'] + amp_arr_bar_bs_hel['2s'])
@@ -170,6 +190,7 @@ def main() -> None:
 
     fig, ax = plt.subplots()
     ax.plot(q2_arr, Q8mi, label=r'Transversity Amplitude', color='darkturquoise', linestyle='--')
+    ax.plot(q2_arr, Q8mi_lcsr, label=r'Transversity Amplitude (LCSR)', color='orange', linestyle=':')
     ax.plot(q2_arr, Q8mi_hel, label='Helicity Amplitude', color='blue', linestyle=':')
     ax.fill_between(q2_arr_paper, Q8mi_paper_lower, Q8mi_paper_upper, color='orange', alpha=0.75, label='DGV [1502.05509]')
     ax.set_xlabel(r'$q^2$ [GeV$^2$]')
@@ -181,6 +202,7 @@ def main() -> None:
 
     fig, ax = plt.subplots()
     ax.plot(q2_arr, Q9, label=r'Transversity Amplitude', color='darkturquoise', linestyle='--')
+    ax.plot(q2_arr, Q9_lcsr, label=r'Transversity Amplitude (LCSR)', color='orange', linestyle=':')
     ax.plot(q2_arr, Q9_hel, label='Helicity Amplitude', color='blue', linestyle=':')
     ax.fill_between(q2_arr_paper, Q9_paper_lower, Q9_paper_upper, color='orange', alpha=0.75, label='DGV [1502.05509]')
     ax.set_xlabel(r'$q^2$ [GeV$^2$]')
