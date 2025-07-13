@@ -45,3 +45,15 @@ pip-delete-this-directory.txt
 # other
 .directory
 .ipynb_checkpoints
+
+# local tests
+local-tests
+local-data/*
+*.pdf
+*.json
+prometheus*
+tmp_dir_latex/*
+*.mp4
+bkp/*
+queries*
+fits_fll/*/*/*yaml

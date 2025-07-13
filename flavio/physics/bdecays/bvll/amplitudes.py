@@ -122,22 +122,20 @@ def get_subleading_tr(q2, wc_obj, par_dict, B, V, cp_conjugate):
 def helicity_amps(q2, ff, wc_obj, par, B, V, lep):
     if q2 >= 8.7 and q2 < 14:
         warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
-    # return add_dict((
-    #     helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
-    #     get_ss(q2, wc_obj, par, B, V, cp_conjugate=False),
-    #     get_subleading(q2, wc_obj, par, B, V, cp_conjugate=False)
-    #     ))
-    return helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False)
+    return add_dict((
+        helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=False),
+        get_ss(q2, wc_obj, par, B, V, cp_conjugate=False),
+        get_subleading(q2, wc_obj, par, B, V, cp_conjugate=False)
+        ))
 
 def helicity_amps_bar(q2, ff, wc_obj, par, B, V, lep):
     if q2 >= 8.7 and q2 < 14:
         warnings.warn("The predictions in the region of narrow charmonium resonances are not meaningful")
-    # return add_dict((
-    #     helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
-    #     get_ss(q2, wc_obj, par, B, V, cp_conjugate=True),
-    #     get_subleading(q2, wc_obj, par, B, V, cp_conjugate=True)
-    #     ))
-    return helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True)
+    return add_dict((
+        helicity_amps_ff(q2, ff, wc_obj, par, B, V, lep, cp_conjugate=True),
+        get_ss(q2, wc_obj, par, B, V, cp_conjugate=True),
+        get_subleading(q2, wc_obj, par, B, V, cp_conjugate=True)
+        ))
 
 
 def transversity_amps(q2, ff, wc_obj, par, B, V, lep):
