@@ -8,6 +8,7 @@ from flavio.classes import Observable, Prediction
 import cmath
 import warnings
 from .. import angular
+from math import sqrt
 
 ### Definite time integrals of the different parts composing the time dependence
 def definite_int_cosh(y, Gamma, tmin, tmax):
@@ -729,3 +730,78 @@ for lep in ['e', 'mu', 'tau']:
             _obs.tex = r"$" + obs_td_bsphill[obs]['tex'] + r"(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
             _obs.add_taxonomy(_process_taxonomy)
             Prediction(_obs_name, bsvll_obs_ratio_func(obs_td_bsphill[obs]['func_num'], SA_den_Bs, _hadr[M]['B'], _hadr[M]['V'], lep))
+
+def denominator_optimised_p(y, x, gamma, J, J_bar, J_h, J_s):
+    return (J['2s'] + J_bar['2s'])
+
+def denominator_optimised_pprime(y, x, gamma, J, J_bar, J_h, J_s):
+    return sqrt(-1 * (J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']))
+
+observables_p = {
+    'SP1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3) / 2, 'tex': r'P_{1}', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s') / 8, 'tex': r'P_{2}', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: -K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9) / 4, 'tex': r'P_{3}', 'desc': 'CP-averaged optimised angular observable. '},
+    'SS': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6c'), 'tex': r'S', 'desc': 'CP-averaged optimised angular observable. '},
+    'AP1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3) / 2, 'tex': r'P_{1}', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s') / 8, 'tex': r'P_{2}', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: -W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9) / 4, 'tex': r'P_{3}', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AS': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6c'), 'tex': r'S', 'desc': 'CP-asymmetric optimised angular observable. '},
+}
+observables_pprime = {
+    'SP4p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'P_{4}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'P_{5}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP6p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'P_{6}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP8p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'P_{8}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
+    'AP4p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'P_{4}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'P_{5}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP6p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'P_{6}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP8p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'P_{8}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
+}
+
+for lep in ['e', 'mu', 'tau']:
+    for M in _hadr.keys():
+
+        _process_tex = _hadr[M]['tex'] +_tex[lep] + r"^+" + _tex[lep] + r"^-"
+        _process_taxonomy = r'Process :: $b$ hadron decays :: FCNC decays :: $B\to V\ell^+\ell^-$ :: $' + _process_tex + r"$"
+
+        for obs, element in sorted(observables_p.items()):
+
+            # binned angular observables
+            _obs_name = "<" + obs + ">(" + M + lep + lep + ")"
+            _obs = Observable(name=_obs_name, arguments=['q2min', 'q2max'])
+            _obs.set_description('Binned ' + element['desc'] + r" in $" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-$")
+            _obs.tex = r"$\langle " + element['tex'] + r"\rangle(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
+            _obs.add_taxonomy(_process_taxonomy)
+            Prediction(_obs_name, bsvll_obs_int_ratio_func(element['func_num'], denominator_optimised_p, _hadr[M]['B'], _hadr[M]['V'], lep))
+
+            # differential angular observables
+            _obs_name = obs + "(" + M + lep + lep + ")"
+            _obs = Observable(name=_obs_name, arguments=['q2'])
+            _obs.set_description(element['desc'][0].capitalize() + element['desc'][1:] + r" in $" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-$")
+            _obs.tex = r"$" + element['tex'] + r"(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
+            _obs.add_taxonomy(_process_taxonomy)
+            Prediction(_obs_name, bsvll_obs_ratio_func(element['func_num'], denominator_optimised_p, _hadr[M]['B'], _hadr[M]['V'], lep))
+
+for lep in ['e', 'mu', 'tau']:
+    for M in _hadr.keys():
+
+        _process_tex = _hadr[M]['tex'] +_tex[lep] + r"^+" + _tex[lep] + r"^-"
+        _process_taxonomy = r'Process :: $b$ hadron decays :: FCNC decays :: $B\to V\ell^+\ell^-$ :: $' + _process_tex + r"$"
+
+        for obs, element in sorted(observables_pprime.items()):
+
+            # binned angular observables
+            _obs_name = "<" + obs + ">(" + M + lep + lep + ")"
+            _obs = Observable(name=_obs_name, arguments=['q2min', 'q2max'])
+            _obs.set_description('Binned ' + element['desc'] + r" in $" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-$")
+            _obs.tex = r"$\langle " + element['tex'] + r"\rangle(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
+            _obs.add_taxonomy(_process_taxonomy)
+            Prediction(_obs_name, bsvll_obs_int_ratio_func(element['func_num'], denominator_optimised_pprime, _hadr[M]['B'], _hadr[M]['V'], lep))
+
+            # differential angular observables
+            _obs_name = obs + "(" + M + lep + lep + ")"
+            _obs = Observable(name=_obs_name, arguments=['q2'])
+            _obs.set_description(element['desc'][0].capitalize() + element['desc'][1:] + r" in $" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-$")
+            _obs.tex = r"$" + element['tex'] + r"(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
+            _obs.add_taxonomy(_process_taxonomy)
+            Prediction(_obs_name, bsvll_obs_ratio_func(element['func_num'], denominator_optimised_pprime, _hadr[M]['B'], _hadr[M]['V'], lep))
