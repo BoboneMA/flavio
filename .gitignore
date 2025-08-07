@@ -47,6 +47,7 @@ pip-delete-this-directory.txt
 .ipynb_checkpoints
 
 # local tests
+yaml
 local-tests
 local-data/*
 *.pdf

@@ -183,43 +183,68 @@ def A_theory_num_int_t_Bs(tmin, tmax, y, x, Gamma, J, J_bar, J_h, J_s, i):
                 )
 
 def K_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
-    # (42) of 1502.05509
-    flavio.citations.register("Descotes-Genon:2015hea")
+    """ Time independent CP averaged angular observable in the theory convention. 
+    Only measurable via a time-dependent angular analysis. 
+    The coefficients $5$, $6s$, $6c$, $8$, and $9$ require flavour-tagging to be measured. 
+    Explanation of the factor $1 / (1 - y^2)$: 
+    In the flavio SA_den_Bs function, which acts as the normalisation for the observables here, 
+    the integrated branching fraction in a given q^2 region is given by: 
+    SA_den_Bs = (1/(1-y**2) * (observables.dGdq2(J) + observables.dGdq2(J_bar))
+                - y/(1-y**2) * observables.dGdq2(J_h))/2
+    whereas the normalisation in the LHCb convention is given by: 
+    I = (observables.dGdq2(J) + observables.dGdq2(J_bar)
+         - y * observables.dGdq2(J_h))
+    As the factor $1 / (1 - y^2)$ is constant, we can cancel it out here in this function. 
+    """
     return 1/(1 - y*y) * (J[i] + J_bar[i])
 
 def W_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
-    # (42) of 1502.05509
-    flavio.citations.register("Descotes-Genon:2015hea")
+    """ 
+    Time independent CP asymmetric angular observable in the theory convention,
+    only measurable via a time-dependent angular analysis. 
+    The coefficients $1s$, $1c$, $2s$, $2c$, $3$, $4$, and $7$ require flavour-tagging to be measured. 
+    see K_theory_num_Bs for an explanation of the factor $1 / (1 - y^2)$ 
+    """
     return 1/(1 - y*y) * (J[i] - J_bar[i])
 
 def H_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
-    # (42) of 1502.05509
-    flavio.citations.register("Descotes-Genon:2015hea")
+    """ 
+    angular observable in the theory convention, 
+    only measurable via a time-dependent angular analysis. 
+    see K_theory_num_Bs for an explanation of the factor $1 / (1 - y^2)$ 
+    """
     return 1/(1 - y*y) * J_h[i]
 
 def Z_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
-    # (42) of 1502.05509
-    flavio.citations.register("Descotes-Genon:2015hea")
+    """ 
+    angular observable in the theory convention, 
+    only measurable via a flavour-tagged and time-dependent angular analysis.
+    see K_theory_num_Bs for an explanation of the factor $1 / (1 - y^2)$ 
+    """
     return 1/(1 - y*y) * J_s[i]
 
-def Q8mi_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s):
-    r"""CP-averaged angular observable $Q_8^{\mathrm{mi}}$ in the LHCb convention.
-    See eq. (56) of arXiv:1502.05509
-    """
-    flavio.citations.register("Descotes-Genon:2015hea")
-    return J_s[8] / ( -2 * ( J['2c'] + J_bar['2c'] ) * ( 2 * (J['2s'] + J_bar['2s']) - (J[3] + J_bar[3]) ) )**0.5
+# def Q8mi_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s):
+#     r"""CP-averaged angular observable $Q_8^{\mathrm{mi}}$ in the LHCb convention.
+#     See eq. (56) of arXiv:1502.05509
+#     """
+#     flavio.citations.register("Descotes-Genon:2015hea")
+#     return J_s[8] / ( -2 * ( J['2c'] + J_bar['2c'] ) * ( 2 * (J['2s'] + J_bar['2s']) - (J[3] + J_bar[3]) ) )**0.5
 
-def Q9_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s):
-    r"""CP-averaged angular observable $Q_8^{\mathrm{mi}}$ in the LHCb convention.
-    See eq. (57) of arXiv:1502.05509
-    """
-    flavio.citations.register("Descotes-Genon:2015hea")
-    return J_s[9] / ( 2 * ( J['2s'] + J_bar['2s'] ) )
+# def Q9_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s):
+#     r"""CP-averaged angular observable $Q_8^{\mathrm{mi}}$ in the LHCb convention.
+#     See eq. (57) of arXiv:1502.05509
+#     """
+#     flavio.citations.register("Descotes-Genon:2015hea")
+#     return J_s[9] / ( 2 * ( J['2s'] + J_bar['2s'] ) )
 
-def M_theory_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, i):
+def M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
     """ proposed optimised angular observables M_i """
     assert i in ['1s', '1c', '2s', '2c', 3, 4, 5, '6s', 7, 8, 9], f"{i} not implemented!"
-    amp = J_s if i in [7, 8, 9] else J_h
+    return J_h[i]
+
+def M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    """ proposed optimised angular observables M_i """
+    assert i in ['1s', '1c', '2s', '2c', 3, 4, 5, '6s', 7, 8, 9], f"{i} not implemented!"
     norm = {
         '1s': (J['2s'] + J_bar['2s']),
         '1c': -(J['2c'] + J_bar['2c']),
@@ -234,27 +259,53 @@ def M_theory_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, i):
         8: ( -2 * (J['2c'] + J_bar['2c']) * ( 2 * (J['2s'] + J_bar['2s']) - (J[3] + J_bar[3]) ) )**0.5,
         9: 2 * (J['2s'] + J_bar['2s']), 
     }
-    return amp[i] / norm[i]
+    return norm[i]
 
-def M_theory_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, i):
+def Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
     """ proposed optimised angular observables M_i """
     assert i in ['1s', '1c', '2s', '2c', 3, 4, 5, '6s', 7, 8, 9], f"{i} not implemented!"
-    amp = J_s if i == 7 else J_h
+    return J_s[i]
+
+def Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    """ proposed optimised angular observables M_i """
+    assert i in ['1s', '1c', '2s', '2c', 3, 4, 5, '6s', 7, 8, 9], f"{i} not implemented!"
     norm = {
-        '1s': (J['1s'] + J_bar['1s']),
-        '1c': (J['1c'] + J_bar['1c']),
-        '2s': (J['1s'] + J_bar['1s']),
-        '2c': (J['1c'] + J_bar['1c']),
-        3: 2/3 * (J['1s'] + J_bar['1s']),
-        4: -((J['1c'] + J_bar['1c']) * (2/3 * (J['1s'] + J_bar['1s']) - (J[3] + J_bar[3])) )**0.5,
-        5: (-(J['1c'] + J_bar['1c']) * ((J[3] + J_bar[3]) - 2/3 * (J['1s'] + J_bar['1s'])) )**0.5,
-        # '6s': (-( 4/3 * (J['1s'] + J_bar['1s']) * (J[3] + J_bar[3]) - (J[3] + J_bar[3])**2 - 4/9 * (J['2s'] + J_bar['2s'])**2 ))**0.25, 
-        '6s': 2/3 * (J['1s'] + J_bar['1s']), 
-        7: -( (J['1c'] + J_bar['1c']) * (2/3 * (J['1s'] + J_bar['1s']) - (J[3] + J_bar[3])) )**0.5, 
-        8: ( 2 * (J['1c'] + J_bar['1c']) * ( 2/3 * (J['1s'] + J_bar['1s']) - (J[3] + J_bar[3]) ) )**0.5,
-        9: 2 * (J['1s'] + J_bar['1s']), 
+        '1s': (J['2s'] + J_bar['2s']),
+        '1c': -(J['2c'] + J_bar['2c']),
+        '2s': (J['2s'] + J_bar['2s']),
+        '2c': -(J['2c'] + J_bar['2c']),
+        3: 2 * (J['2s'] + J_bar['2s']),
+        4: -(- (J['2c'] + J_bar['2c']) * (2 * (J['2s'] + J_bar['2s']) - (J[3] + J_bar[3])) )**0.5,
+        5: ((J['2c'] + J_bar['2c']) * ((J[3] + J_bar[3]) - 2 * (J['2s'] + J_bar['2s'])) )**0.5,
+        # '6s': (-( 4 * (J['2s'] + J_bar['2s']) * (J[3] + J_bar[3]) - (J[3] + J_bar[3])**2 - 4 * (J['2s'] + J_bar['2s'])**2 ))**0.25, 
+        '6s': 2 * (J['2s'] + J_bar['2s']), 
+        7: -( -(J['2c'] + J_bar['2c']) * (2 * (J['2s'] + J_bar['2s']) - (J[3] + J_bar[3])) )**0.5, 
+        8: ( -2 * (J['2c'] + J_bar['2c']) * ( 2 * (J['2s'] + J_bar['2s']) - (J[3] + J_bar[3]) ) )**0.5,
+        9: 2 * (J['2s'] + J_bar['2s']), 
     }
-    return amp[i] / norm[i]
+    return norm[i]
+
+def M_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, i):
+    """ proposed optimised angular observables M_i """
+    assert i in [4, 5, 7, 8], f"{i} not implemented!"
+    norm = {
+        4: (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5,
+        5: 2 * (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5,
+        7: (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5, 
+        8: (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5, 
+    }
+    return norm[i]
+
+def Q_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, i):
+    """ proposed optimised angular observables M_i """
+    assert i in [4, 5, 7, 8], f"{i} not implemented!"
+    norm = {
+        4: (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5,
+        5: 2 * (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5,
+        7: (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5, 
+        8: (-(J['2c'] + J_bar['2c']) * (J['2s'] + J_bar['2s']) )**0.5, 
+    }
+    return norm[i]
 
 def S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
     if i in [4, '6s', '6c', 7, 9]:
@@ -296,17 +347,25 @@ def Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
         return -Z_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
     return Z_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def Q8mi_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s):
-    return Q8mi_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s) * SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+def M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    if i in [4, '6s', '6c', 7, 9]:
+        return -M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
+    return M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def Q9_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s):
-    return Q9_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s) * SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+def Mprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    if i in [4, '6s', '6c', 7, 9]:
+        return -M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
+    return M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, i):
-    return M_theory_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, i) * SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+def Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    if i in [4, '6s', '6c', 7, 9]:
+        return -Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
+    return Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, i):
-    return M_theory_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, i) * SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+def Qprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    if i in [4, '6s', '6c', 7, 9]:
+        return -Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
+    return Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
 def S_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
     r"""CP-averaged angular observable $S_i$ in the LHCb convention.
@@ -364,17 +423,17 @@ def Z_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
     """
     return Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)/SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s)
 
-def Q8mi_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s):
-    return Q8mi_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+def M_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    return M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)/M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def Q9_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s):
-    return Q9_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s)
+def Mprime_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    return M_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)/M_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def M_experiment_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, i):
-    return M_theory_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, i)
+def Q_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    return Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)/Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)
 
-def M_experiment_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, i):
-    return M_theory_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, i)
+def Qprime_experiment_Bs(y, x, gamma, J, J_bar, J_h, J_s, i):
+    return Q_theory_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, i)/Q_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, i)
 
 def dGdq2_interference_Bs(y, x, gamma, J, J_bar, J_h, J_s):
     # TODO: add correct citation
@@ -558,9 +617,15 @@ class BsVll_int_ratio(observables.BVllObservableBinned):
 _tex = {'e': 'e', 'mu': '\mu', 'tau': r'\tau'}
 _observables = {
 'FL': {'func_num': FL_num_Bs, 'tex': r'\overline{F_L}', 'desc': 'Time-averaged longitudinal polarization fraction'},
+'S1s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\overline{S_{1s}}', 'desc': 'Time-averaged, CP-averaged angular observable'},
+'S1c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\overline{S_{1c}}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\overline{S_3}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S4': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\overline{S_4}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\overline{S_7}', 'desc': 'Time-averaged, CP-averaged angular observable'},
+'A5': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\overline{A_5}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
+'A6s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\overline{A_6^s}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
+'A8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '8'), 'tex': r'\overline{A_8}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
+'A9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '9'), 'tex': r'\overline{A_9}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
 }
 _hadr = {
 'Bs->phi': {'tex': r"B_s\to \phi ", 'B': 'Bs', 'V': 'phi', },
@@ -666,42 +731,51 @@ obs_td_bsphill = {
     'H7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: H_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{H}_{7}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))'},
     'H8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: H_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{H}_{8}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))'},
     'H9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: H_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\mathcal{H}_{9}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))'},
-    'Z1s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\mathcal{Z}_{1s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z1c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\mathcal{Z}_{1c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z2s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'\mathcal{Z}_{2s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z2c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'\mathcal{Z}_{2c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\mathcal{Z}_{3}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z4': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\mathcal{Z}_{4}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z5': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\mathcal{Z}_{5}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z6s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\mathcal{Z}_{6s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z6c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6c'), 'tex': r'\mathcal{Z}_{6c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{Z}_{7}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{Z}_{8}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Z9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\mathcal{Z}_{9}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(y\Gamma t))'},
-    'Q8mi': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q8mi_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s), 'tex': r'Q_8^-', 'desc': 'Optimised angular observable from the time-dependent decay rate (Following 1502.05509)'},
-    'Q9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q9_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s), 'tex': r'Q_9', 'desc': 'Optimised angular observable from the time-dependent decay rate (Following 1502.05509)'},
-    'M1s_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\mathcal{M}_{1s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M1c_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\mathcal{M}_{1c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M2s_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'\mathcal{M}_{2s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M2c_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'\mathcal{M}_{2c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M3_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\mathcal{M}_{3}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M4_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\mathcal{M}_{4}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M5_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\mathcal{M}_{5}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M6s_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\mathcal{M}_{6s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M7_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{M}_{7}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M8_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{M}_{8}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M9_1': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_1(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\mathcal{M}_{9}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M1s_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\mathcal{M}_{1s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M1c_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\mathcal{M}_{1c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M2s_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'\mathcal{M}_{2s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M2c_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'\mathcal{M}_{2c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M3_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\mathcal{M}_{3}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M4_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\mathcal{M}_{4}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M5_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\mathcal{M}_{5}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M6s_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\mathcal{M}_{6s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M7_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{M}_{7}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M8_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{M}_{8}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
-    'M9_2': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs_2(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\mathcal{M}_{9}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \cosh(y\Gamma t))'},
+    'Z1s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\mathcal{Z}_{1s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z1c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\mathcal{Z}_{1c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z2s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'\mathcal{Z}_{2s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z2c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'\mathcal{Z}_{2c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\mathcal{Z}_{3}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z4': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\mathcal{Z}_{4}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z5': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\mathcal{Z}_{5}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z6s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\mathcal{Z}_{6s}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z6c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6c'), 'tex': r'\mathcal{Z}_{6c}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{Z}_{7}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{Z}_{8}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Z9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Z_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\mathcal{Z}_{9}', 'desc': 'Angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))'},
+    'Q1s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'Q_{1s}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s')},
+    'Q1c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'Q_{1c}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c')},
+    'Q2s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'Q_{2s}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s')},
+    'Q2c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'Q_{2c}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c')},
+    'Q3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'Q_{3}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3)},
+    'Q4': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'Q_{4}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4)},
+    'Q5': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'Q_{5}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5)},
+    'Q6s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'Q_{6s}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s')},
+    'Q7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'Q_{7}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7)},
+    'Q8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'Q_{8}^-', 'desc': 'Optimised angular observable from the time-dependent decay rate (Following 1502.05509)', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8)},
+    'Q9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'Q_{9}', 'desc': 'Optimised angular observable from the time-dependent decay rate (Following 1502.05509)', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9)},
+    'M1s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\mathcal{M}_{1s}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s')},
+    'M1c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\mathcal{M}_{1c}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c')},
+    'M2s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'\mathcal{M}_{2s}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s')},
+    'M2c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'\mathcal{M}_{2c}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c')},
+    'M3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\mathcal{M}_{3}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3)},
+    'M4': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\mathcal{M}_{4}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4)},
+    'M5': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\mathcal{M}_{5}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5)},
+    'M6s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\mathcal{M}_{6s}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s')},
+    'M7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{M}_{7}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7)},
+    'M8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{M}_{8}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8)},
+    'M9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\mathcal{M}_{9}', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9)},
+    'M4p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Mprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\mathcal{M}_{4}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 4)},
+    'M5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Mprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\mathcal{M}_{5}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 5)},
+    'M7p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Mprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\mathcal{M}_{7}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 7)},
+    'M8p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Mprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\mathcal{M}_{8}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sinh(y\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 8)},
+    'Q4p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Qprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'Q_{4}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 4)},
+    'Q5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Qprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'Q_{5}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 5)},
+    'Q7p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Qprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'Q_{7}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 7)},
+    'Q8p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: Qprime_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'Q_{8}^\prime', 'desc': 'Optimised angular observable from the time-dependent decay rate. (proportional to \sin(x\Gamma t))', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: Q_theory_den_Bs_prime(y, x, gamma, J, J_bar, J_h, J_s, 8)},
+    'M4_den': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_theory_den_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'blab', 'desc': 'blubb', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: 1 },
+    'M4_num': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: M_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'blab', 'desc': 'blubb', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: 1 },
+    'Iden': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: SA_den_Bs(y, x, gamma, J, J_bar, J_h, J_s), 'tex': r'blab', 'desc': 'blubb', 'den': lambda y, x, gamma, J, J_bar, J_h, J_s: 1/(1 - y*y) },
 }
 
 _hadr = {
@@ -721,7 +795,8 @@ for lep in ['e', 'mu', 'tau']:
             _obs.set_description('Binned ' + obs_td_bsphill[obs]['desc'] + r" in $" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-$")
             _obs.tex = r"$\langle " + obs_td_bsphill[obs]['tex'] + r"\rangle(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
             _obs.add_taxonomy(_process_taxonomy)
-            Prediction(_obs_name, bsvll_obs_int_ratio_func(obs_td_bsphill[obs]['func_num'], SA_den_Bs, _hadr[M]['B'], _hadr[M]['V'], lep))
+            norm_fun = SA_den_Bs if 'den' not in obs_td_bsphill[obs] else obs_td_bsphill[obs]['den']
+            Prediction(_obs_name, bsvll_obs_int_ratio_func(obs_td_bsphill[obs]['func_num'], norm_fun, _hadr[M]['B'], _hadr[M]['V'], lep))
 
             # differential angular observables
             _obs_name = obs + "(" + M + lep + lep + ")"
@@ -729,7 +804,7 @@ for lep in ['e', 'mu', 'tau']:
             _obs.set_description(obs_td_bsphill[obs]['desc'][0].capitalize() + obs_td_bsphill[obs]['desc'][1:] + r" in $" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-$")
             _obs.tex = r"$" + obs_td_bsphill[obs]['tex'] + r"(" + _hadr[M]['tex'] + _tex[lep] + r"^+" + _tex[lep] + "^-)$"
             _obs.add_taxonomy(_process_taxonomy)
-            Prediction(_obs_name, bsvll_obs_ratio_func(obs_td_bsphill[obs]['func_num'], SA_den_Bs, _hadr[M]['B'], _hadr[M]['V'], lep))
+            Prediction(_obs_name, bsvll_obs_ratio_func(obs_td_bsphill[obs]['func_num'], norm_fun, _hadr[M]['B'], _hadr[M]['V'], lep))
 
 def denominator_optimised_p(y, x, gamma, J, J_bar, J_h, J_s):
     return (J['2s'] + J_bar['2s'])
@@ -749,12 +824,12 @@ observables_p = {
 }
 observables_pprime = {
     'SP4p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'P_{4}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
-    'SP5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'P_{5}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
-    'SP6p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'P_{6}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: 0.5 * K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'P_{5}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
+    'SP6p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: -0.5 * K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'P_{6}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
     'SP8p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: K_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'P_{8}^\prime', 'desc': 'CP-averaged optimised angular observable. '},
     'AP4p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'P_{4}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
-    'AP5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'P_{5}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
-    'AP6p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'P_{6}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP5p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: 0.5 * W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'P_{5}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
+    'AP6p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: -0.5 * W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'P_{6}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
     'AP8p': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: W_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'P_{8}^\prime', 'desc': 'CP-asymmetric optimised angular observable. '},
 }
 
