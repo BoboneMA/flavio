@@ -619,13 +619,15 @@ _observables = {
 'FL': {'func_num': FL_num_Bs, 'tex': r'\overline{F_L}', 'desc': 'Time-averaged longitudinal polarization fraction'},
 'S1s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1s'), 'tex': r'\overline{S_{1s}}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S1c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '1c'), 'tex': r'\overline{S_{1c}}', 'desc': 'Time-averaged, CP-averaged angular observable'},
+'S2s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2s'), 'tex': r'\overline{S_{2s}}', 'desc': 'Time-averaged, CP-averaged angular observable'},
+'S2c': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '2c'), 'tex': r'\overline{S_{2c}}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S3': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 3), 'tex': r'\overline{S_3}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S4': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 4), 'tex': r'\overline{S_4}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'S7': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: S_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 7), 'tex': r'\overline{S_7}', 'desc': 'Time-averaged, CP-averaged angular observable'},
 'A5': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 5), 'tex': r'\overline{A_5}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
 'A6s': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '6s'), 'tex': r'\overline{A_6^s}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
-'A8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '8'), 'tex': r'\overline{A_8}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
-'A9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, '9'), 'tex': r'\overline{A_9}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
+'A8': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 8), 'tex': r'\overline{A_8}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
+'A9': {'func_num': lambda y, x, gamma, J, J_bar, J_h, J_s: A_experiment_num_Bs(y, x, gamma, J, J_bar, J_h, J_s, 9), 'tex': r'\overline{A_9}', 'desc': 'Time-averaged, CP-asymmetric angular observable'},
 }
 _hadr = {
 'Bs->phi': {'tex': r"B_s\to \phi ", 'B': 'Bs', 'V': 'phi', },
